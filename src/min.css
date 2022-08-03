@@ -1,0 +1,35 @@
+:host {
+    background-color: #FFF;
+    color: #111;
+    font-size: 1rem;
+}
+:host([editable]) .copy {
+    background-color: #FFFFFF;
+}
+.lines, .edit-in, .edit-out {
+    padding: 0.65em 0.85em;
+    font-family: monospace;
+    box-sizing: border-box;
+}
+.edit {
+    scroll-padding-right: 0.85rem; 
+}
+.edit-in {
+    caret-color: slategray;
+}
+.edit-in:focus {
+    outline: none;
+}
+.copy {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    margin: 0.25em;
+    padding: 0.75em;
+    background-color: inherit;
+    user-select: none;
+}
+.highlighted {
+    background-color: #FFFFDA;
+}
