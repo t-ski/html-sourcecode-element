@@ -1,0 +1,51 @@
+:host {
+    background-color: #FFF;
+    color: #111;
+    border: 1px solid #EAEAEA;
+    border-radius: 0.3em;
+}
+:host(:hover) .copy {
+    opacity: 1;
+}
+.lines, .edit {
+    height: fit-content;
+    min-height: 100%;
+}
+.lines, .edit-in, .edit-out {
+    padding: 0.65em 0.85em;
+    font-family: monospace;
+    box-sizing: border-box;
+}
+.lines {
+    background-color: #FAFAFA;
+    color: #7A7A7A;
+    text-align: right;
+    user-select: none;
+}
+.copy {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    margin: 0.25em;
+    padding: 0.75em;
+    background-color: inherit;
+    text-transform: uppercase;
+    opacity: 0;
+    user-select: none;
+    transition: all 200ms;
+}
+
+@media (prefers-color-scheme: dark) {
+    :host {
+        background-color: #222 !important;
+        color: #FFF !important;
+        border-color: #555 !important;
+    }
+    .lines {
+        background-color: #3E3E3E !important;
+    }
+    .highlighted {
+        background-color: #444800 !important;
+    }
+}
