@@ -1,0 +1,50 @@
+:host([type-live]) .edit-out {
+    opacity: 0;
+}
+:host {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    overflow: scroll;
+}
+:host([hidden]) {
+    display: none;
+}
+:host([editable]) .edit {
+    cursor: text;
+}
+:host([editable]) .edit-in {
+    display: block;
+}
+:host([editable]) .edit-out {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+.edit {
+    position: relative;
+    flex: 1 0 0;
+}
+.edit-in > div, .edit-out > div {
+    height: auto;
+    min-height: 1.5em;
+}
+.edit-in > div, .edit-out > div, .lines {
+    line-height: 1.5em;
+}
+.edit-in {
+    display: none;
+    min-height: fit-content;
+    color: transparent;
+}
+.edit-out {
+    position: relative;
+    display: block;
+    width: fit-content;
+    min-width: 100%;
+}
+.copy {
+    display: none;
+}
