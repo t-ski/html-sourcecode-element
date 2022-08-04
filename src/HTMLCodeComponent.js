@@ -49,14 +49,6 @@ class HTMLCodeComponent extends HTMLElement {
         `);
     }
 
-    static overrideStyle(style) {
-        while(HTMLCodeComponent.#template.content.querySelectorAll("style").length > 1) {
-            HTMLCodeComponent.#template.content.removeChild(HTMLCodeComponent.#template.content.querySelector("style"));
-        };
-
-        HTMLCodeComponent.appendStyle(style);
-    }
-
     static appendStyle(style) {
         const newStyleElement = document.createElement("style");
         newStyleElement.textContent = style
@@ -428,9 +420,7 @@ HTMLCodeComponent.appendStyle("@CSS"
     :host([copyable]) .copy {
         display: block;
     }
-` : "")
-.replace(/;/g, " !important;"));    // Auto prioritize)
-
+` : ""));
 
 window.customElements.define(devConfig.tagName, HTMLCodeComponent);
 
