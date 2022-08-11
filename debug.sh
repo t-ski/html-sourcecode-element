@@ -1,4 +1,4 @@
 #!/bin/bash
 
-open ./showcase.html
+open ./test/integration.html
 node build --watch

@@ -1,11 +1,12 @@
-// TODO: Auto complete interface?
-
 const devConfig = {
     genericLanguageKey: "*",
     tagName: "code-component"
 };
 
 
+/**
+ * Dynamic element template for single DOM bind cloning.
+ */
 const template = document.createElement("template");
 template.innerHTML = `
 <div class="lines"></div>
@@ -20,52 +21,106 @@ template.innerHTML = `
 `.trim();
 
 
+/**
+ * Code component element class extending the native HTML element class.
+ */
 class HTMLCodeComponent extends HTMLElement {
 
+    // STATIC
+
+    // Private
+
+    static get observedAttributes() {
+        return [ "highlight", "language", "type-live" ];
+    }
+
+    /**
+     * Optional copy handler callback to invoke upon each copy action.
+     * The handler is passed the associated copy button element.
+     */
     static #copyHandler;
 
+    /**
+     * User custom static element config. Can be used to set
+     * default attributes and other globally effective parameters.
+     */
     static #customConfig = {
-        tabSize: 4,
-        noOverflow: false
-    };  // TODO: Line height option?
+        "tab-size": 4,
+        "copyable": false,
+        "editable": false,
+        "language": null,
+        "type-live": 1,
+        "no-overflow": false
+    };
+
+    /**
+     * Static reference to the template element.
+     */
     static #template = template;
+    
+    /**
+     * Language-associated code formatting handler callback to invoke
+     * upon each code change. The handler is passed the code string
+     * and the element's language. Generic (all-language effective)
+     * handlers can be assigned using the wildcard * for the language.
+     * 
+     */
     static #formatHandlers = new Map();
-        
+
+    // Public
+    
+    /**
+     * Provide the user custom config object. The object is merged onto
+     * the initially stated definition in order to keep defaults.
+     * @param {*} customConfigObj 
+     */
     static config(customConfigObj) {
         HTMLCodeComponent.#customConfig = {
             ...HTMLCodeComponent.#customConfig,
             
             ...customConfigObj
         };
-
-        !HTMLCodeComponent.#customConfig.noOverflow
-        && HTMLCodeComponent.appendStyle(`
-            .edit {
-                overflow: scroll;
-            }
-            .edit-in, .edit-out {
-                white-space: nowrap !important;
-            }
-        `);
     }
 
-    static appendStyle(style) {
-        const newStyleElement = document.createElement("style");
-        newStyleElement.textContent = style
-        .replace(/\s*\n+\s*/g, "")
-        .replace(/"/g, '\\"')
-        .trim();
-        HTMLCodeComponent.#template.content.insertBefore(newStyleElement, HTMLCodeComponent.#template.content.querySelector("style"));
+    /**
+     * Append styles to the code component shadow DOM. The styles are 
+     * of lower priority than the required styles, but can override with
+     * the !important property. Multiple styles can be provided.
+     * @param {String} cssRulesOrHref CSS rules
+     */
+    static appendStyle(cssRulesOrHref) {
+        let insertElement;
+
+        if(/^(https?:\/\/)?(\.\.?\/)*([^\s{}/]*\/)*[^\s{}/]+$/i.test(cssRulesOrHref)) {
+            insertElement = document.createElement("link");
+            insertElement.setAttribute("rel", "stylesheet");
+            insertElement.setAttribute("href", cssRulesOrHref);
+        } else {
+            insertElement = document.createElement("style");
+            insertElement.textContent = cssRulesOrHref
+            .replace(/\s*\n+\s*/g, "")
+            .replace(/"/g, '\\"')
+            .trim();
+        }
+
+        HTMLCodeComponent.#template.content
+        .insertBefore(insertElement, HTMLCodeComponent.#template.content.querySelector("style"));
     }
     
+    /**
+     * Set the formatting handler for a certain language.
+     * @param {String} languageName Language name (* wildcard for any)
+     * @param {Function} handler Handler callback (=> code, actual language)
+     */
     static setFormatHandler(languageName, handler) {
         languageName = !Array.isArray(languageName)
-        ? [ languageName ] : languageName
+        ? [ languageName ] : languageName;
 
         languageName.forEach(language => {
-            HTMLCodeComponent.#formatHandlers.set(language, handler);
+            const list = HTMLCodeComponent.#formatHandlers.get(language, handler) || [];
+            HTMLCodeComponent.#formatHandlers.set(language, list.concat([ handler ]));
         });
-
+        
         Array.from(document.querySelectorAll(devConfig.tagName))
         .filter(element => {
             return languageName.includes(element.getAttribute("language"))
@@ -74,36 +129,47 @@ class HTMLCodeComponent extends HTMLElement {
         .forEach(element => element.update());
     }
     
+    /**
+     * Set the unique copy handler.
+     * @param {Function} handler Handler callback (=> copy button element)
+     */
     static setCopyHandler(handler) {
         HTMLCodeComponent.#copyHandler = handler;
     }
 
+    // INDIVIDUAL
+    
+    // Individual shadow DOM host elment
+    #initialized;
     #host;
-    #eventHandlers;
 
+    /**
+     * Create a custom code component element instance.
+     */
     constructor() {
         super();
-
-        this.#eventHandlers = new Map();
 
         this.#host = this.attachShadow({
             mode: "closed"
         });
-        
+
         this.#host.appendChild(HTMLCodeComponent.#template.content.cloneNode(true));
 
         this.#host.querySelector(".edit-in")
         .addEventListener("input", _ => {
             this.#applyFormatHandler();
         });
-        
+
+        this.#host.querySelector(".edit-in")
+        .addEventListener("blur", _ => this.dispatchEvent(new Event("change")));
+
         this.#host.querySelector(".edit-in")
         .addEventListener("keydown", e => {
             let appendix;
             
             switch(e.keyCode) {
                 case 9: // n-space tab (sub)
-                    appendix = Array.from({ length: HTMLCodeComponent.#customConfig.tabSize }, _ => "&emsp;").join("");
+                    appendix = Array.from({ length: HTMLCodeComponent.#customConfig["tab-size"] }, _ => "&emsp;").join("");
 
                     break;
                 case 32: // Space (sub)
@@ -111,7 +177,7 @@ class HTMLCodeComponent extends HTMLElement {
 
                     break;
             }
-
+            
             if(!appendix) {
                 return;
             }
@@ -120,7 +186,7 @@ class HTMLCodeComponent extends HTMLElement {
 
             document.execCommand("insertHTML", false, appendix);
         });
-
+        
         this.#host.querySelector(".edit")
         .addEventListener("click", e => {
             if(e.target.className !== "edit") {
@@ -146,6 +212,88 @@ class HTMLCodeComponent extends HTMLElement {
         });
     }
 
+    // Lifecycle
+
+    connectedCallback() {
+        if(HTMLCodeComponent.#customConfig["no-overflow"]) {
+            this.#deleteRequiredCssRule(2);
+            this.#deleteRequiredCssRule(1);
+        }
+
+        !(navigator.clipboard || {}).writeText
+        && this.#deleteRequiredCssRule(0);
+        
+        (this.typeLive && this.editable)
+        && this.removeAttribute("type-live");
+
+        setTimeout(_ => {
+            const lines = this.innerHTML
+            .replace(/^\s*\n|\n\s*$/g, "")
+            .split(/\n/g);
+
+            const minIndentation = lines
+            .filter(line => (line.trim().length > 0))
+            .map(line => line.match(/^\s*/)[0])
+            .reduce((prev, cur) => Math.min(prev, cur.length), Infinity);
+            
+            const normalizedText = lines
+            .map(line => line.slice(!isNaN(parseInt(minIndentation)) ? minIndentation : 0))
+            .map(line => line.replace(/^ /g, "\u2003"))
+            .map(line => line.replace(/ {2}/g, "\u2003\u2003"))
+            .map(line => {
+                return line
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">")
+                .replace(/&amp;/g, "&");
+            });
+            
+            this.#host.querySelector(".edit-in").innerHTML = normalizedText
+            .map(line => `<div>${line || ""}</div>`)
+            .join("");
+
+            const code = normalizedText.join("\n");
+            
+            ![undefined, null].includes(this.typeLive)
+            ? this.#applyLiveTyping(code)
+            : this.#applyFormatHandler(code);
+
+            this.#initialized = true;
+        }, 0);
+    }
+
+    attributeChangedCallback(attrName) {
+        switch(attrName) {
+            case "highlight":
+                this.#applyHighlighting();
+                return;
+            case "language":
+                this.#applyFormatHandler();
+                return;
+            case "type-live":
+                this.#applyLiveTyping();
+                return;
+        }
+    }
+
+    // Private
+
+    /**
+     * Delete a specific CSS rule of the required styles sheet.
+     * Utilize for element effective style adaptions (mind order!).
+     * @param {Number} index Index position of rule
+     */
+    #deleteRequiredCssRule(index) {
+        this.#host
+        .styleSheets[this.#host.styleSheets.length - 1]
+        .deleteRule(index);
+    }
+
+    /**
+     * Read the bare code text from a given element. Code text is manipulated
+     * in order to be processed as expected.
+     * @param {string} query Element query selector
+     * @returns {String} Code text
+     */
     #readBareContent(query) {
         const parent = this.#host.querySelector(query);
 
@@ -153,59 +301,76 @@ class HTMLCodeComponent extends HTMLElement {
             return [];
         }
 
-        return Array.from(parent.querySelector("div")
-        ? parent.querySelectorAll("div")
-        : parent)
-        .map(child => child.textContent)
+        const children = Array.from(parent.querySelectorAll("div"));
+        return ((children.length > 0)
+        ? children : [ parent ])
+        .map(child => {
+            const content = child.innerHTML;
+
+            child.classList[(content.trim().length > 0) ? "add" : "remove"]("no-br"); // Keep empty line space
+
+            return content.replace(/\n+\s*/g, "");
+        })
         .join("\n");
     }
 
-    #dispatchEvent(event) {
-        if(!this.#eventHandlers.has(event)) {
-            return;
-        }
-
-        this.#eventHandlers.get(event)
-        .forEach(handler => handler({
-            target: this
-        })); // What to pass?
-    }
-
+    /**
+     * Apply the defined formatting handler to the current element
+     * code text based on the related attribute.
+     * @param {String} [input] Optional code text to use regardless of the actual contents
+     */
     #applyFormatHandler(input) {
-        const tagRegex = /<( *(\/ *)?[a-z][a-z0-9_-]*( +[a-z0-9_-]+ *(= *("|')((?!\\\5)(.| ))*\5)?)* *)>/gi;
+        const language = this.language || HTMLCodeComponent.#customConfig["language"];
 
-        const handler = HTMLCodeComponent.#formatHandlers.has(devConfig.genericLanguageKey)
-        ? HTMLCodeComponent.#formatHandlers.get(devConfig.genericLanguageKey)
-        : (HTMLCodeComponent.#formatHandlers.has(this.language)
-            ? HTMLCodeComponent.#formatHandlers.get(this.language)
-            : c => c || "");
-
-        const content = (input || this.#readBareContent(".edit-in"))
+        const handlers = (HTMLCodeComponent.#formatHandlers.get(devConfig.genericLanguageKey) || [])
+        .concat(HTMLCodeComponent.#formatHandlers.get(language) || []);
+        
+        const tagRegex = /<( *(\/ *)?(?!br)[a-z][a-z0-9_-]*( +[a-z0-9_-]+ *(= *("|')((?!\\\5)(.| ))*\5)?)* *)>/gi;
+        
+        input = (input || this.#readBareContent(".edit-in"))
         .replace(tagRegex, "&lt;$1&gt;");
         
-        const openTags = {};
-        this.#host.querySelector(".edit-out").innerHTML = 
-        handler(content, this.language)
+        let output = input;
+        handlers.forEach(handler => {
+            output = handler(output, language);
+        });
+
+        const openingTags = [];
+        
+        this.#host.querySelector(".edit-out").innerHTML = output
         .split(/\n/g)
         .map(line => {
+            const prevOpeningTags = Object.assign([], openingTags);
+            
             (line.match(tagRegex) || [])
             .forEach(tag => {
-                const tagName = tag.slice(1)
-                .replace(/^< *(\/ *)?/, "")
-                .split(/[ >]/, 2)[0]
-                .toLowerCase();
+                const tagName = tag.match(/[a-z][a-z0-9_-]*/i)[0];
                 
-                if(tag.slice(1).trim().charAt(0) === "/") {
-                    openTags[tagName]
-                    && openTags[tagName].pop();
+                if(/^< *\//.test(tag)) {
+                    while(![tagName, undefined].includes(openingTags.pop()));
 
                     return;
                 }
-
-                openTags[tagName] = (open.tagName || []).concat([ tag ]);
+                
+                openingTags.push({
+                    name: tagName,
+                    tag: tag
+                });
             });
 
-            return `<div>${line}</div>`;
+            return `<div>${
+                prevOpeningTags
+                .map(tag => {
+                    return tag.tag
+                })
+                .join("")
+            }${line}${
+                openingTags
+                .map(tag => {
+                    return `</${tag.name}>`;
+                })
+                .join("")
+            }</div>`;
         })
         .join("");
         
@@ -217,39 +382,37 @@ class HTMLCodeComponent extends HTMLElement {
 
             lineHeight = lineHeight || parseInt(computedStyle.getPropertyValue("line-height"));
 
-            const ratio = HTMLCodeComponent.#customConfig.noOverflow
+            const ratio = HTMLCodeComponent.#customConfig["no-overflow"]
             ? Math.round(parseInt(computedStyle.getPropertyValue("height")) / lineHeight)
             : 1;
             
             lineNumbers.push(`${lineNumbers.length + 1}${Array.from({ length: ratio }, _ => "<br>").join("")}`);
-        })
+        });
 
         this.#host.querySelector(".lines").innerHTML = lineNumbers.join("");
-
-        /* this.#host.querySelector(".edit-in").innerHTML = this.#readBareContent(".edit-out")
-        .split(/\n/g)
-        .map(line => `<div>${line}</div>`)
-        .join(""); */   // Cursor mis-update behavior
-
-        this.#applyHighlighting();
         
-        // Dispatch "event"
-        this.#dispatchEvent("input");
+        this.#applyHighlighting();
     }
 
+    /**
+     * Apply line highlighting based on the related attribute.
+     */
     #applyHighlighting() {
-        if(!this.hasAttribute("highlight")) {
+        if(!this.highlight) {
             return;
         }
-
+        
         const lineDivs = Array.from(this.#host.querySelectorAll(".edit-out > div"));
-
-        this.getAttribute("highlight")
+        
+        lineDivs.forEach(div => div.classList.remove("highlighted"));
+        
+        this.highlight
         .split(/;/g)
         .map(instruction => instruction.trim())
         .forEach(instruction => {
             if(/^[0-9]+$/.test(instruction)) {
-                lineDivs[parseInt(instruction) - 1].classList.add("highlighted");
+                lineDivs[parseInt(instruction) - 1]
+                && lineDivs[parseInt(instruction) - 1].classList.add("highlighted");
 
                 return;
             }
@@ -259,33 +422,32 @@ class HTMLCodeComponent extends HTMLElement {
             }
 
             const indices = instruction
-            .split(",")
+            .split("-")
             .map(index => parseInt(index.trim()))
             .sort();
 
             for(let index = indices[0]; index <= indices[1]; index++) {
+                if(!lineDivs[parseInt(index) - 1]) {
+                    return;
+                }
+
                 lineDivs[parseInt(index) - 1].classList.add("highlighted");
             }
         });
     }
     
-    #applyLiveTyping(speed) {
-        if(this.hasAttribute("editable")) {
-            return;
-        }
+    /**
+     * Apply (trigger) live typing behavior based on the related attribute.
+     * @param {String} [input] Optional code text to use regardless of the actual contents
+     */
+    #applyLiveTyping(input) {
+        const speed = parseInt(this.typeLive) || HTMLCodeComponent.#customConfig["type-live"];
 
-        if(!this.isConnected) {
-            return;
-        }
-
-        this.#host.styleSheets[this.#host.styleSheets.length - 1]
-        .deleteRule(0);
+        const remainingInput = (input || this.#readBareContent(".edit-out"))
+        .split("");
         
-        const remainingInput = this.#readBareContent(".edit-out")
-        .split(""); 
-
         const writtenInput = [];
-        
+
         const whitespaceRegex = /^(\s|\n)$/;
         let lastChar = " ";
         const type = fixedDelay => {
@@ -315,82 +477,62 @@ class HTMLCodeComponent extends HTMLElement {
         type(0);
     }
 
-    connectedCallback() {
-        window.setTimeout(_ => {
-            const lines = this.innerHTML
-            .replace(/^\s*\n|\n\s*$/g, "")
-            .split(/\n/g);
+    /**
+     * Attibute setter helper.
+     * @param {String} attribute Attribute name
+     * @param {*} value Attribute value
+     */
+    #getBinaryAttribute(attribute) {
+        const value = this.getAttribute(attribute);
 
-            const minIndentation = lines
-            .filter(line => (line.trim().length > 0))
-            .map(line => line.match(/^\s*/)[0])
-            .reduce((prev, cur) => Math.min(prev, cur.length), Infinity);
-
-            const normalizedText = lines
-            .map(line => line.slice(!isNaN(parseInt(minIndentation)) ? minIndentation : 0))
-            .map(line => line.replace(/^ /g, "\u2003"))
-            .map(line => line.replace(/ {2}/g, "\u2003\u2003"));
-
-            this.#host.querySelector(".edit-in").innerHTML = normalizedText
-            .map(line => `<div>${line || ""}</div>`)
-            .join("")
-            .replace(/&lt;/g, "<")
-            .replace(/&gt;/g, ">")
-            .replace(/&amp;/g, "&");
-
-            this.#applyFormatHandler(normalizedText.join("\n"));
-
-            this.hasAttribute("type-live")
-            && this.#applyLiveTyping(parseInt(this.getAttribute("type-live")));
-        }, 0);
-
-        // TODO: Detect tab size to normalize it?
+        return ![undefined, null, "false"].includes(value);
     }
 
-    attributeChangedCallback(attrName) {
-        if(attrName !== "language") {
-            return;
-        }
-
-        this.#applyFormatHandler();
+    /**
+     * Attribute setter helper.
+     * @param {String} attribute Attribute name
+     * @param {*} value Attribute value
+     */
+    #setAttribute(attribute, value) {
+        this[`${!!value ? "set" : "remove"}Attribute`](attribute, value);
     }
 
-    addEventListener(event, handler) {
-        const current = this.#eventHandlers.get(event) || [];
+    // Public
 
-        this.#eventHandlers.set(event, current.concat([ handler ]));
-    }   // TODO: Complete
-
+    /**
+     * Manually update the state of the code component.
+     */
     update() {
         this.#applyFormatHandler();
     }
 
+    // Attribute getters / setters
+    
     get editable() {
-        return this.hasAttribute("editable");
+        return this.#getBinaryAttribute("editable");
     }
     
     set editable(value) {
-        this[`${value ? "set" : "remove"}Attribute`]("editable", value);
+        (this.typeLive && value !== "false")
+        && this.removeAttribute("type-live");
 
-        value && this.#applyHighlighting();
+        this.#setAttribute("editable", value);
     }
 
     get copyable() {
-        return this.hasAttribute("copyable");
+        return this.#getBinaryAttribute("copyable");
     }
     
     set copyable(value) {
-        this[`${value ? "set" : "remove"}Attribute`]("copyable", value);
+        this.#setAttribute("copyable", value);
     }
 
     get highlight() {
-        return this.hasAttribute("highlight");
+        return this.getAttribute("highlight");
     }
     
     set highlight(value) {
-        this[`${value ? "set" : "remove"}Attribute`]("highlight", value);
-
-        value && this.#applyHighlighting(value);
+        this.#setAttribute("highlight", value);
     }
 
     get typeLive() {
@@ -398,9 +540,11 @@ class HTMLCodeComponent extends HTMLElement {
     }
     
     set typeLive(value) {
-        this[`${value ? "set" : "remove"}Attribute`]("type-live", value);
+        if(this.editable) {
+            return;
+        }
 
-        value && this.#applyLiveTyping(value);
+        this.#setAttribute("type-live", value);
     }
 
     get language() {
@@ -408,21 +552,36 @@ class HTMLCodeComponent extends HTMLElement {
     }
     
     set language(value) {
-        this[`${value ? "set" : "remove"}Attribute`]("copyable", value);
+        this.#setAttribute("language", value);
+    }
+
+    get innerHTML() {
+        return !this.#initialized
+        ? super.innerHTML
+        : this.#readBareContent(".edit-in");
+    }
+
+    set innerHTML(input) {
+        this.#applyFormatHandler(input);
+    }
+
+    get textContent() {
+        return this.innerHTML;
+    }
+
+    set textContent(input) {
+        this.innerHTML = input;
     }
 
 }
 
 
-HTMLCodeComponent.appendStyle("@CSS"
-.concat((navigator.clipboard && navigator.clipboard.writeText)
-? `
-    :host([copyable]) .copy {
-        display: block;
-    }
-` : ""));
+// Use style append routine to set required styles
+HTMLCodeComponent.appendStyle("@CSS");
 
+// Globally register element
 window.customElements.define(devConfig.tagName, HTMLCodeComponent);
 
 
+// Globally declare element
 window.HTMLCodeComponent = HTMLCodeComponent;

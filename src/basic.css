@@ -1,8 +1,8 @@
 :host {
-    background-color: #FFF;
-    color: #111;
+    background-color: #FFFFFF;
+    color: #111111;
     border: 1px solid #EAEAEA;
-    border-radius: 0.3em;
+    border-radius: 0.35em;
 }
 :host(:hover) .copy {
     opacity: 1;
@@ -11,16 +11,13 @@
     height: fit-content;
     min-height: 100%;
 }
-.lines, .edit-in, .edit-out {
-    padding: 0.65em 0.85em;
-    font-family: monospace;
-    box-sizing: border-box;
-}
 .lines {
     background-color: #FAFAFA;
     color: #7A7A7A;
-    text-align: right;
     user-select: none;
+}
+.highlighted {
+    background-color: #FFFFDA;
 }
 .copy {
     position: absolute;

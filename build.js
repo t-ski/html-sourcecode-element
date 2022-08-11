@@ -4,7 +4,7 @@ const { join } = require("path");
 
 const config = {
     cssRenderMark: "@CSS",
-    detectionWindowSize: 1000,
+    detectionWindowSize: 2500,
     distFilePrefix: "codecomponent",
     reqScriptFileName: "HTMLCodeComponent.js",
     reqStyleFileName: "required.css"
@@ -103,7 +103,11 @@ function writeDist(srcFileName, isRefresh = true) {
             reqSource,
             readSource(srcFileName),
         "})();"
-    ].join("\n"));
+    ]
+    .join("\n")
+    .replace(/\/\*((?!\*\/)(.|\s))*\*\//g, "")
+    .replace(/([^\\])\/\/[^\n]*\n/g, "$1")
+    .replace(/\s{2,}|\n/g, " "));
 
     console.log(`\x1b[2m${
         isRefresh ? "↻" : "|"

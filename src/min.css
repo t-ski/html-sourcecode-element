@@ -6,20 +6,6 @@
 :host([editable]) .copy {
     background-color: #FFFFFF;
 }
-.lines, .edit-in, .edit-out {
-    padding: 0.65em 0.85em;
-    font-family: monospace;
-    box-sizing: border-box;
-}
-.edit {
-    scroll-padding-right: 0.85rem; 
-}
-.edit-in {
-    caret-color: slategray;
-}
-.edit-in:focus {
-    outline: none;
-}
 .copy {
     position: absolute;
     top: 0;

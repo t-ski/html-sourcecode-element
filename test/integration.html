@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/styles/default.min.css">
         <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js"></script>
         
         <script>
-            document.write(`<script src="./dist/codecomponent.${document.location.search.slice(1) || "min"}.js">`);</script>
+            document.write(`<script src="../dist/codecomponent.${document.location.search.slice(1) || "min"}.js">`);</script>
         </script>
         
         <script>
@@ -14,24 +13,45 @@
                     color: gray;
                     font-style: italic;
                 }
+                .hljs-type, .hljs-keyword {
+                    color: blue;
+                }
+                .hljs-title, .hljs-params, .hljs-property, .hljs-selector-class, .hljs-built_in {
+                    color: purple;
+                }
+                .hljs-number {
+                    color: orange;
+                }
+                .hljs-string {
+                    color: green;
+                }
             `);
+            HTMLCodeComponent.appendStyle("./integration.css");
             
             HTMLCodeComponent.config({
-                tabSize: 2,
-                noOverflow: true
+                "tab-size": 2,
+                "no-overflow": true
+            });
+
+            HTMLCodeComponent.setFormatHandler([ "js", "javascript" ], code => {
+                return code.replace(/([0-9]+)/g, '<i style="color: orange;">$1</i>');
             });
 
             function enableHljs() {
                 HTMLCodeComponent.setFormatHandler("*", (code, language) => {
+                    code = code
+                         .replace(/&lt;/g, "<")
+                         .replace(/&gt;/g, ">");
+                    
                     return hljs.highlightAuto(code).value;
                 });
             }
 
             document.addEventListener("DOMContentLoaded", _ => {
-                /* document.querySelector("code-component:nth-of-type(5)")
+                document.querySelector("code-component:nth-of-type(7)")
                 .addEventListener("input", e => {
-                    console.log(e.target.textContent);
-                }); */
+                    document.querySelector("#chain-out").textContent = ` [20]... ${e.target.innerHTML.slice(25, 50)} ...[50]`;
+                });
             });
         </script>
         
@@ -96,8 +116,8 @@
     </head>
     <body>
         <div id="theme-list">
-            <a href="./showcase.html?min">MIN</a>
-            <a href="./showcase.html?basic">Theme BASIC</a>
+            <a href="?min">Min</a>
+            <a href="?basic">Basic</a>
             <span onclick="enableHljs()">Enable HLJS</span>
         </div>
         <div id="wrapper">
@@ -118,7 +138,7 @@
                 console.log("Copied code example");
             </code-component>
             <h4>Highlighted</h4>
-            <code-component language="js" highlight="1;4,6">
+            <code-component language="js" highlight="1;4-6">
                 // Important lines are highlighted
 
                 while(x > 0) {
@@ -128,7 +148,7 @@
                 }
             </code-component>
             <h4>Type Live</h4>
-            <code-component language="js" type-live="1.75">
+            <code-component language="js" type-live>
                 /*
                  * Have a more vivid experience
                  * with “live edited“ elements.
