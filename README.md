@@ -4,10 +4,10 @@ Rich HTML native code component.
 
 ## Integration
 
-Integrate GitHub hosted module via script tag.
+Integrate GitHub hosted module via script tag:
 
 ``` html
-<script src="https://github.io/t-ski/html-code-component/dist/codecomponent.basic.js"></script>
+<script src="https://t-ski.github.io/html-code-component/dist/codecomponent.basic.js"></script>
 ```
 
 Code component elements can be created like ordinary non-empty HTML elements: From markup tags or dynamic creation.
