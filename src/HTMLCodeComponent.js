@@ -291,10 +291,11 @@ class HTMLCodeComponent extends HTMLElement {
     /**
      * Read the bare code text from a given element. Code text is manipulated
      * in order to be processed as expected.
-     * @param {string} query Element query selector
+     * @param {String} query Element query selector
+     * @param {Boolean} noHTML Whether to noit receive any HTML entities (text only)
      * @returns {String} Code text
      */
-    #readBareContent(query) {
+    #readBareContent(query, noHTML = false) {
         const parent = this.#host.querySelector(query);
 
         if(!parent) {
@@ -305,7 +306,7 @@ class HTMLCodeComponent extends HTMLElement {
         return ((children.length > 0)
         ? children : [ parent ])
         .map(child => {
-            const content = child.innerHTML;
+            const content = child[noHTML ? "textContent" : "innerHTML"];
 
             child.classList[(content.trim().length > 0) ? "add" : "remove"]("no-br"); // Keep empty line space
 
@@ -558,7 +559,7 @@ class HTMLCodeComponent extends HTMLElement {
     get innerHTML() {
         return !this.#initialized
         ? super.innerHTML
-        : this.#readBareContent(".edit-in");
+        : this.#readBareContent(".edit-in", true);
     }
 
     set innerHTML(input) {
