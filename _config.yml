@@ -1,0 +1,10 @@
+exclude:
+  - src
+  - test
+  - buil.js
+  - build.sh
+  - debug.sh
+  - README.md
+
+include:
+  - dist
