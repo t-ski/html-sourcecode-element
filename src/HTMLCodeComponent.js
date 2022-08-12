@@ -205,18 +205,7 @@ class HTMLCodeComponent extends HTMLElement {
 
         const copyButton = this.#host.querySelector(".copy");
         copyButton
-        .addEventListener("click", _ => {
-            try {
-                const content = this.#readBareContent(".edit-in")
-                .replace(/\u2003/g, " ");
-
-                navigator.clipboard.writeText(content);
-
-                HTMLCodeComponent.#copyHandler && HTMLCodeComponent.#copyHandler(copyButton);
-            } catch(err) {
-                HTMLCodeComponent.#copyHandler && HTMLCodeComponent.#copyHandler(copyButton);
-            }
-        });
+        .addEventListener("click", _ => this.#applyCopyHandler());
     }
 
     // Lifecycle
@@ -306,6 +295,7 @@ class HTMLCodeComponent extends HTMLElement {
      * @param {Boolean} noHTML Whether to noit receive any HTML entities (text only)
      * @returns {String} Code text
      */
+    
     #readBareContent(query, noHTML = false) {
         const parent = this.#host.querySelector(query);
 
@@ -321,7 +311,9 @@ class HTMLCodeComponent extends HTMLElement {
 
             child.classList[(content.trim().length > 0) ? "add" : "remove"]("no-br"); // Keep empty line space
 
-            return content.replace(/\n+\s*/g, "");
+            return noHTML
+            ? content.replace(/\u2003/g, " ")
+            : content;
         })
         .join("\n");
     }
@@ -404,6 +396,18 @@ class HTMLCodeComponent extends HTMLElement {
         this.#host.querySelector(".lines").innerHTML = lineNumbers.join("");
         
         this.#applyHighlighting();
+    }
+
+    #applyCopyHandler() {
+        try {
+            const content = this.#readBareContent(".edit-in", true);
+
+            navigator.clipboard.writeText(content);
+
+            HTMLCodeComponent.#copyHandler && HTMLCodeComponent.#copyHandler(copyButton);
+        } catch(err) {
+            HTMLCodeComponent.#copyHandler && HTMLCodeComponent.#copyHandler(copyButton);
+        }
     }
 
     /**
