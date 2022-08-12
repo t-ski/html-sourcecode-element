@@ -26,8 +26,9 @@
                     color: green;
                 }
             `);
-            HTMLCodeComponent.appendStyle("./integration.css");
             
+            setTimeout(_ => HTMLCodeComponent.appendStyle("./integration.css"), 2000);
+
             HTMLCodeComponent.config({
                 "tab-size": 2,
                 "no-overflow": true

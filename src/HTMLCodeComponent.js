@@ -1,5 +1,5 @@
 const devConfig = {
-    genericLanguageKey: "*",
+    languageWildcard: "*",
     tagName: "code-component"
 };
 
@@ -9,15 +9,15 @@ const devConfig = {
  */
 const template = document.createElement("template");
 template.innerHTML = `
-<div class="lines"></div>
-<div class="edit">
-    <div class="edit-in" contenteditable data-nosnippet></div>
-    <code class="edit-out">
-        <slot></slot>
-    </code>
-</div>
-<span class="copy">Copy</span>
-<!-- © t-ski@GitHub -->
+    <div class="lines"></div>
+    <div class="edit">
+        <div class="edit-in" contenteditable data-nosnippet></div>
+        <code class="edit-out">
+            <slot></slot>
+        </code>
+    </div>
+    <span class="copy">Copy</span>
+    <!-- © t-ski@GitHub -->
 `.trim();
 
 
@@ -31,7 +31,7 @@ class HTMLCodeComponent extends HTMLElement {
     // Private
 
     static get observedAttributes() {
-        return [ "highlight", "language", "type-live" ];
+        return [ "copyable", "editable", "highlight", "language", "type-live" ];
     }
 
     /**
@@ -104,7 +104,13 @@ class HTMLCodeComponent extends HTMLElement {
         }
 
         HTMLCodeComponent.#template.content
-        .insertBefore(insertElement, HTMLCodeComponent.#template.content.querySelector("style"));
+        .insertBefore(insertElement, HTMLCodeComponent.#template.content.firstChild);
+        
+        Array.from(document.querySelectorAll(devConfig.tagName))
+        .filter(element => (element instanceof HTMLCodeComponent))
+        .forEach(element => {
+            element.#host.insertBefore(insertElement.cloneNode(true), element.#host.firstChild);
+        });
     }
     
     /**
@@ -122,11 +128,12 @@ class HTMLCodeComponent extends HTMLElement {
         });
         
         Array.from(document.querySelectorAll(devConfig.tagName))
+        .filter(element => (element instanceof HTMLCodeComponent))
         .filter(element => {
             return languageName.includes(element.getAttribute("language"))
-            || languageName.includes(devConfig.genericLanguageKey);
+            || languageName.includes(devConfig.languageWildcard);
         })
-        .forEach(element => element.update());
+        .forEach(element => element.#update());
     }
     
     /**
@@ -159,7 +166,7 @@ class HTMLCodeComponent extends HTMLElement {
         .addEventListener("input", _ => {
             this.#applyFormatHandler();
         });
-
+        
         this.#host.querySelector(".edit-in")
         .addEventListener("blur", _ => this.dispatchEvent(new Event("change")));
 
@@ -253,9 +260,7 @@ class HTMLCodeComponent extends HTMLElement {
 
             const code = normalizedText.join("\n");
             
-            ![undefined, null].includes(this.typeLive)
-            ? this.#applyLiveTyping(code)
-            : this.#applyFormatHandler(code);
+            this.#update(code);
 
             this.#initialized = true;
         }, 0);
@@ -276,6 +281,12 @@ class HTMLCodeComponent extends HTMLElement {
     }
 
     // Private
+
+    #update(code) {
+        ![undefined, null].includes(this.typeLive)
+        ? this.#applyLiveTyping(code)
+        : this.#applyFormatHandler(code);
+    }
 
     /**
      * Delete a specific CSS rule of the required styles sheet.
@@ -323,7 +334,7 @@ class HTMLCodeComponent extends HTMLElement {
     #applyFormatHandler(input) {
         const language = this.language || HTMLCodeComponent.#customConfig["language"];
 
-        const handlers = (HTMLCodeComponent.#formatHandlers.get(devConfig.genericLanguageKey) || [])
+        const handlers = (HTMLCodeComponent.#formatHandlers.get(devConfig.languageWildcard) || [])
         .concat(HTMLCodeComponent.#formatHandlers.get(language) || []);
         
         const tagRegex = /<( *(\/ *)?(?!br)[a-z][a-z0-9_-]*( +[a-z0-9_-]+ *(= *("|')((?!\\\5)(.| ))*\5)?)* *)>/gi;
@@ -500,12 +511,7 @@ class HTMLCodeComponent extends HTMLElement {
 
     // Public
 
-    /**
-     * Manually update the state of the code component.
-     */
-    update() {
-        this.#applyFormatHandler();
-    }
+    // Manual update
 
     // Attribute getters / setters
     
@@ -579,6 +585,7 @@ class HTMLCodeComponent extends HTMLElement {
 
 // Use style append routine to set required styles
 HTMLCodeComponent.appendStyle("@CSS");
+
 
 // Globally register element
 window.customElements.define(devConfig.tagName, HTMLCodeComponent);

@@ -99,6 +99,7 @@ function writeDist(srcFileName, isRefresh = true) {
     const distFileName = `${config.distFilePrefix}.${srcFileName}`;
 
     writeFileSync(join(path.dist, distFileName), [
+        '"use strict";',
         "(_ => {",
             reqSource,
             readSource(srcFileName),
