@@ -23,8 +23,6 @@
 :host([copyable]) .copy {
     display: block !important;
 }
-.edit-in div br:not(:last-child),
-.edit-in div.no-br br:last-child,
 .copy {
     display: none !important;
 }

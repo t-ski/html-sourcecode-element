@@ -179,6 +179,10 @@ class HTMLCodeComponent extends HTMLElement {
                     appendix = Array.from({ length: HTMLCodeComponent.#customConfig["tab-size"] }, _ => "&emsp;").join("");
 
                     break;
+                case 13:
+                    appendix = "<br>\n<br>";
+
+                    break;
                 case 32: // Space (sub)
                     appendix = "&emsp;";
 
@@ -193,6 +197,27 @@ class HTMLCodeComponent extends HTMLElement {
 
             document.execCommand("insertHTML", false, appendix);
         });
+
+        this.#host.querySelector(".edit-in")
+        .addEventListener("copy", _ => this.#applyCopyHandler());
+        this.#host.querySelector(".edit-out")
+        .addEventListener("copy", _ => this.#applyCopyHandler());
+
+        this.#host.querySelector(".edit-in")
+        .addEventListener("paste", e => {
+            e.preventDefault();
+
+            const pastedText = (window.clipboardData && window.clipboardData.getData)
+            ? window.clipboardData.getData("Text")
+            : e.clipboardData.getData("text/plain");
+            
+            if(!pastedText) {
+                return;
+            }
+
+            document.execCommand("insertHTML", false, pastedText
+            .replace(/\n/g, "<br>\n"));
+        });
         
         this.#host.querySelector(".edit")
         .addEventListener("click", e => {
@@ -203,8 +228,7 @@ class HTMLCodeComponent extends HTMLElement {
             this.#host.querySelector(".edit-in").focus();
         });
 
-        const copyButton = this.#host.querySelector(".copy");
-        copyButton
+        this.#host.querySelector(".copy")
         .addEventListener("click", _ => this.#applyCopyHandler());
     }
 
@@ -240,8 +264,10 @@ class HTMLCodeComponent extends HTMLElement {
                 return line
                 .replace(/&lt;/g, "<")
                 .replace(/&gt;/g, ">")
+                .replace(/&quot;/g, "\"")
+                .replace(/&#39;/g, "\'")
                 .replace(/&amp;/g, "&");
-            });
+            }); // TODO: Routine for input
             
             this.#host.querySelector(".edit-in").innerHTML = normalizedText
             .map(line => `<div>${line || ""}</div>`)
@@ -296,24 +322,13 @@ class HTMLCodeComponent extends HTMLElement {
      * @returns {String} Code text
      */
     
-    #readBareContent(query, noHTML = false, noUnicode = false) {
-        const parent = this.#host.querySelector(query);
-
-        if(!parent) {
-            return [];
-        }
-
-        const children = Array.from(parent.querySelectorAll("div"));
-        return ((children.length > 0)
-        ? children : [ parent ])
-        .map(child => {
-            const content = child[noHTML ? "textContent" : "innerHTML"];
-
-            child.classList[(content.trim().length > 0) ? "add" : "remove"]("no-br"); // Keep empty line space
-
+    #readBareContent(noUnicode = false) {
+        return this.#host.querySelector(".edit-in").textContent
+        .split(/\n/g)
+        .map(line => {
             return noUnicode
-            ? content.replace(/\u2003/g, " ")
-            : content;
+            ? line.replace(/\u2003/g, " ")
+            : line;
         })
         .join("\n");
     }
@@ -329,12 +344,11 @@ class HTMLCodeComponent extends HTMLElement {
         const handlers = (HTMLCodeComponent.#formatHandlers.get(devConfig.languageWildcard) || [])
         .concat(HTMLCodeComponent.#formatHandlers.get(language) || []);
         
-        const tagRegex = /<( *(\/ *)?(?!br)[a-z][a-z0-9_-]*( +[a-z0-9_-]+ *(= *("|')((?!\\\5)(.| ))*\5)?)* *)>/gi;
+        const tagRegex = /<( *(\/ *)?(?!br)[a-z][a-z0-9_-]*( +[a-z0-9_-]+ *(= *("|')((?!\\\6)(.| ))*\6)?)* *)>/gi;
         
-        input = (input || this.#readBareContent(".edit-in", true))
-        .replace(tagRegex, "&lt;$1&gt;");
+        input = input || this.#readBareContent();
         
-        let output = input;
+        let output = input.replace(tagRegex, "&lt;$1&gt;");
         handlers.forEach(handler => {
             output = handler(output, language);
         });
@@ -398,11 +412,13 @@ class HTMLCodeComponent extends HTMLElement {
         this.#applyHighlighting();
     }
 
-    #applyCopyHandler() {
-        try {
-            const content = this.#readBareContent(".edit-in", true, true);
+    #applyCopyHandler(e) {
+        e && e.preventDefault();
 
-            navigator.clipboard.writeText(content);
+        const copyButton = this.#host.querySelector(".copy");
+        
+        try {
+            navigator.clipboard.writeText(this.textContent);
 
             HTMLCodeComponent.#copyHandler && HTMLCodeComponent.#copyHandler(copyButton);
         } catch(err) {
@@ -459,7 +475,7 @@ class HTMLCodeComponent extends HTMLElement {
     #applyLiveTyping(input) {
         const speed = parseInt(this.typeLive) || HTMLCodeComponent.#customConfig["type-live"];
 
-        const remainingInput = (input || this.#readBareContent(".edit-out"))
+        const remainingInput = (input || this.#readBareContent())
         .split("");
         
         const writtenInput = [];
@@ -569,7 +585,7 @@ class HTMLCodeComponent extends HTMLElement {
     get innerHTML() {
         return !this.#initialized
         ? super.innerHTML
-        : this.#readBareContent(".edit-in", true, true);
+        : this.#readBareContent(true);
     }
 
     set innerHTML(input) {
