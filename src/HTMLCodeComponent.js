@@ -296,7 +296,7 @@ class HTMLCodeComponent extends HTMLElement {
      * @returns {String} Code text
      */
     
-    #readBareContent(query, noHTML = false) {
+    #readBareContent(query, noHTML = false, noUnicode = false) {
         const parent = this.#host.querySelector(query);
 
         if(!parent) {
@@ -311,7 +311,7 @@ class HTMLCodeComponent extends HTMLElement {
 
             child.classList[(content.trim().length > 0) ? "add" : "remove"]("no-br"); // Keep empty line space
 
-            return noHTML
+            return noUnicode
             ? content.replace(/\u2003/g, " ")
             : content;
         })
@@ -331,7 +331,7 @@ class HTMLCodeComponent extends HTMLElement {
         
         const tagRegex = /<( *(\/ *)?(?!br)[a-z][a-z0-9_-]*( +[a-z0-9_-]+ *(= *("|')((?!\\\5)(.| ))*\5)?)* *)>/gi;
         
-        input = (input || this.#readBareContent(".edit-in"))
+        input = (input || this.#readBareContent(".edit-in", true))
         .replace(tagRegex, "&lt;$1&gt;");
         
         let output = input;
@@ -400,7 +400,7 @@ class HTMLCodeComponent extends HTMLElement {
 
     #applyCopyHandler() {
         try {
-            const content = this.#readBareContent(".edit-in", true);
+            const content = this.#readBareContent(".edit-in", true, true);
 
             navigator.clipboard.writeText(content);
 
@@ -569,7 +569,7 @@ class HTMLCodeComponent extends HTMLElement {
     get innerHTML() {
         return !this.#initialized
         ? super.innerHTML
-        : this.#readBareContent(".edit-in", true);
+        : this.#readBareContent(".edit-in", true, true);
     }
 
     set innerHTML(input) {
