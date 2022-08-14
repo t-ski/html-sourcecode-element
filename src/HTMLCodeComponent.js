@@ -144,6 +144,10 @@ class HTMLCodeComponent extends HTMLElement {
         HTMLCodeComponent.#copyHandler = handler;
     }
 
+    static createTab(character) {
+        return Array.from({ length: HTMLCodeComponent.#customConfig["tab-size"] }, _ => character).join("");
+    }
+
     // INDIVIDUAL
     
     // Individual shadow DOM host elment
@@ -176,15 +180,15 @@ class HTMLCodeComponent extends HTMLElement {
             
             switch(e.keyCode) {
                 case 9: // n-space tab (sub)
-                    appendix = Array.from({ length: HTMLCodeComponent.#customConfig["tab-size"] }, _ => "&emsp;").join("");
+                    appendix = HTMLCodeComponent.createTab("\u2003");
 
                     break;
                 case 13:
-                    appendix = "<br>\n<br>";
+                    appendix = "<br>\n\u200b";
 
                     break;
                 case 32: // Space (sub)
-                    appendix = "&emsp;";
+                    appendix = "\u2003";
 
                     break;
             }
@@ -194,7 +198,7 @@ class HTMLCodeComponent extends HTMLElement {
             }
             
             e.preventDefault();
-
+            
             document.execCommand("insertHTML", false, appendix);
         });
 
@@ -247,35 +251,33 @@ class HTMLCodeComponent extends HTMLElement {
         && this.removeAttribute("type-live");
 
         setTimeout(_ => {
-            const lines = this.innerHTML
-            .replace(/^\s*\n|\n\s*$/g, "")
+            const lines = this.textContent
+            .replace(/^([\t ]*\n)*/, "")
+            .replace(/(\n[\t ]*)*$/, "")
             .split(/\n/g);
 
-            const minIndentation = lines
+            const minIndent = lines
             .filter(line => (line.trim().length > 0))
-            .map(line => line.match(/^\s*/)[0])
-            .reduce((prev, cur) => Math.min(prev, cur.length), Infinity);
+            .map(line => line.match(/^[\t ]*/)[0].length)
+            .reduce((prev, cur) => Math.min(prev, cur), Infinity);
             
-            const normalizedText = lines
-            .map(line => line.slice(!isNaN(parseInt(minIndentation)) ? minIndentation : 0))
-            .map(line => line.replace(/^ /g, "\u2003"))
-            .map(line => line.replace(/ {2}/g, "\u2003\u2003"))
+            this.#host.querySelector(".edit-in").innerHTML = lines
             .map(line => {
+                if(line.trim().length === 0) {
+                    return line.trim();
+                }
+                
                 return line
-                .replace(/&lt;/g, "<")
-                .replace(/&gt;/g, ">")
-                .replace(/&quot;/g, "\"")
-                .replace(/&#39;/g, "\'")
-                .replace(/&amp;/g, "&");
-            }); // TODO: Routine for input
+                .replace(/\t/g, HTMLCodeComponent.createTab(" "))
+                .replace(new RegExp(`^ {${minIndent}}`, "g"), "")
+                .replace(/^ /g, "\u2003")
+                .replace(/ {2}/g, "\u2003\u2003")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+            })
+            .join("<br>\n");
             
-            this.#host.querySelector(".edit-in").innerHTML = normalizedText
-            .map(line => `<div>${line || ""}</div>`)
-            .join("");
-
-            const code = normalizedText.join("\n");
-            
-            this.#update(code);
+            this.#update();
 
             this.#initialized = true;
         }, 0);
@@ -321,16 +323,12 @@ class HTMLCodeComponent extends HTMLElement {
      * @param {Boolean} noHTML Whether to noit receive any HTML entities (text only)
      * @returns {String} Code text
      */
-    
     #readBareContent(noUnicode = false) {
-        return this.#host.querySelector(".edit-in").textContent
-        .split(/\n/g)
-        .map(line => {
-            return noUnicode
-            ? line.replace(/\u2003/g, " ")
-            : line;
-        })
-        .join("\n");
+        const bare = this.#host.querySelector(".edit-in").textContent;
+
+        return noUnicode
+        ? bare.replace(/\u2003|\u200b/g, " ")
+        : bare;
     }
 
     /**
@@ -354,7 +352,6 @@ class HTMLCodeComponent extends HTMLElement {
         });
 
         const openingTags = [];
-        
         this.#host.querySelector(".edit-out").innerHTML = output
         .split(/\n/g)
         .map(line => {
@@ -406,7 +403,7 @@ class HTMLCodeComponent extends HTMLElement {
             
             lineNumbers.push(`${lineNumbers.length + 1}${Array.from({ length: ratio }, _ => "<br>").join("")}`);
         });
-
+        
         this.#host.querySelector(".lines").innerHTML = lineNumbers.join("");
         
         this.#applyHighlighting();

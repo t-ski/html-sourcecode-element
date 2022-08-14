@@ -112,12 +112,14 @@ HTMLCodeComponent.setFormatHandler("*", (code, language) => {
 <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js"></script>
 
 <script>
-    HTMLCodeComponent.setFormatHandler("*", code => {
+    HTMLCodeComponent.setFormatHandler("*", (code, language) => {
         code = code
-              .replace(/&lt;/g, "<")
-              .replace(/&gt;/g, ">");
-        
-        return hljs.highlightAuto(code).value;
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">");
+
+        return hljs.highlight(code, {
+            language: language || "Java"
+        }).value;
     });
 </script>
 ```
