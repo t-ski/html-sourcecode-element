@@ -201,12 +201,7 @@ class HTMLCodeComponent extends HTMLElement {
             
             document.execCommand("insertHTML", false, appendix);
         });
-
-        this.#host.querySelector(".edit-in")
-        .addEventListener("copy", _ => this.#applyCopyHandler());
-        this.#host.querySelector(".edit-out")
-        .addEventListener("copy", _ => this.#applyCopyHandler());
-
+        
         this.#host.querySelector(".edit-in")
         .addEventListener("paste", e => {
             e.preventDefault();
@@ -409,9 +404,7 @@ class HTMLCodeComponent extends HTMLElement {
         this.#applyHighlighting();
     }
 
-    #applyCopyHandler(e) {
-        e && e.preventDefault();
-
+    #applyCopyHandler() {
         const copyButton = this.#host.querySelector(".copy");
         
         try {

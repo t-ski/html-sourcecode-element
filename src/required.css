@@ -65,6 +65,7 @@
 }
 .lines {
     text-align: right;
+    user-select: none;
 }
 .edit-in > div, .edit-out > div {
     height: auto;
