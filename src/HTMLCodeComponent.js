@@ -352,6 +352,7 @@ class HTMLCodeComponent extends HTMLElement {
         .map(line => {
             const prevOpeningTags = Object.assign([], openingTags);
             
+            let index = 0;
             (line.match(tagRegex) || [])
             .forEach(tag => {
                 const tagName = tag.match(/[a-z][a-z0-9_-]*/i)[0];
@@ -366,8 +367,18 @@ class HTMLCodeComponent extends HTMLElement {
                     name: tagName,
                     tag: tag
                 });
+
+                const prevIndex = index;
+                index = index + tag.length;
+
+                line = `${line.slice(0, prevIndex)}${
+                    line.slice(prevIndex, index)
+                    .replace(/(^| )([^ ]+)/g, `${"$1".replace(/ /, "\u2003")}<span>$2</span>`)
+                }${line.slice(index)}`;
             });
 
+            // Wrap all words by SPAN tags in order to enable one-word double click selection
+            
             return `<div>${
                 prevOpeningTags
                 .map(tag => {
