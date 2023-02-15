@@ -35,8 +35,8 @@ Several attribute modifiers are available:
 
 | Name | Purpose |
 | :--- | :------ |
-| `copyable` | *Enable copying of code via button.* |
-| `editable` | *Enable editing of code.* |
+| `copyable` | *Enable copying of code via button* |
+| `editable` | *Enable editing of code* |
 | `highlight` | *Highlight given line(s) of code. Multiple lines to delimit with semicolon (;); line ranges to depicit with an infix dash (-).* |
 | `type-live`| *Whether to have the given code* |
 
@@ -65,11 +65,15 @@ HTMLCodeComponent.config({
 
 ## Style
 
-Custom styles can be provided to extend (and possibly override) the default theme styles; both per CSS text and stylesheet link:
+Custom styles can be provided to extend (and possibly override) the default style theme. At that, both plain CSS text or a path to a stylesheet file may be provided:
 
 ``` js
 // CSS Text overload
 HTMLCodeComponent.appendStyle(`
+    .edit {
+        color: slategray;
+    }
+
     .hljs-comment {
         color: gray;
     }
@@ -78,6 +82,18 @@ HTMLCodeComponent.appendStyle(`
 // Stylesheet href overload
 HTMLCodeComponent.appendStyle("/assets/css/code-component.css");
 ```
+
+### Structure
+
+The code component element maintains an encapsulated DOM. The underlying elements can be styles from the given styles accessing the elements directly. The internal elements are classified as follows:
+
+| Class | Element Description |
+| :--- | :------------------- |
+| `:host` | *Overall element wrapper* |
+| `lines` | *Line number indicator on the left* |
+| `edit` | *Editable area on the right* |
+| `highlighted` | *Highlighted lines* |
+| `copy` | *Copy button in the top-right corner* |
 
 ## Format handler
 
@@ -112,15 +128,7 @@ HTMLCodeComponent.setFormatHandler("*", (code, language) => {
 <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js"></script>
 
 <script>
-    HTMLCodeComponent.setFormatHandler("*", (code, language) => {
-        code = code
-            .replace(/&lt;/g, "<")
-            .replace(/&gt;/g, ">");
-
-        return hljs.highlight(code, {
-            language: language || "Java"
-        }).value;
-    });
+    HTMLCodeComponent.setFormatHandler("*", (code, language) => hljs.highlight(code, { language }).value);
 </script>
 ```
 
