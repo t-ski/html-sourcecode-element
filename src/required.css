@@ -1,5 +1,12 @@
 /* DYNAMIC */
 
+:host([editable]):not([type-live]) .edit-out {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
 :host([copyable]) .copy {
     display: block;
 }
@@ -17,7 +24,7 @@
 :host([hidden]) {
     display: none !important;
 }
-:host([editable]) .edit-in {
+:host([editable]):not([type-live]) .edit-in {
     display: block !important;
 }
 :host([copyable]) .copy {
@@ -38,15 +45,8 @@
     flex-direction: row;
     overflow: scroll;
 }
-:host([editable]) .edit {
+:host([editable]):not([type-live]) .edit {
     cursor: text;
-}
-:host([editable]) .edit-out {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
 }
 .edit {
     position: relative;
