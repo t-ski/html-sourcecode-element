@@ -22,7 +22,7 @@ try { mkdirSync(path.dist); } catch {}
 let reqSource;
 
 
-function workSource(force = false) {
+function workSource(force, noCompression) {
     readdir(path.src, {
         withFileTypes: true
     }, (_, dirents) => {
@@ -67,7 +67,7 @@ function workSource(force = false) {
                 return;
             }
 
-            writeDist(fileName, !force);
+            writeDist(fileName, !force, noCompression);
 
             processedFiles.push(normalizedFileName);
         });
@@ -95,20 +95,25 @@ function readSource(fileName, styleFileName) {
     return jsSource;
 }
 
-function writeDist(srcFileName, isRefresh = true) {
+function writeDist(srcFileName, isRefresh = true, noCompression = false) {
     const distFileName = `${config.distFilePrefix}.${srcFileName}`;
 
-    writeFileSync(join(path.dist, distFileName), [
+    let script = [
         '"use strict";',
         "(_ => {",
             reqSource,
             readSource(srcFileName),
         "})();"
     ]
-    .join("\n")
-    .replace(/\/\*((?!\*\/)(.|\s))*\*\//g, "")
-    .replace(/([^\\])\/\/[^\n]*\n/g, "$1")
-    .replace(/\s{2,}|\n/g, " "));
+    .join("\n");
+    
+    script = !noCompression
+    ? script.replace(/\/\*((?!\*\/)(.|\s))*\*\//g, "")
+        .replace(/([^\\])\/\/[^\n]*\n/g, "$1")
+        .replace(/\s{2,}|\n/g, " ")
+    : script;
+
+    writeFileSync(join(path.dist, distFileName), script);
 
     console.log(`\x1b[2m${
         isRefresh ? "↻" : "|"
@@ -119,7 +124,7 @@ function writeDist(srcFileName, isRefresh = true) {
 if(/^-(-watch|W)$/.test(process.argv.slice(2)[0])) {
     console.log("\x1b[32mWatching source for incremental builds.\x1b[0m");
 
-    setInterval(workSource, config.detectionWindowSize);
+    setInterval(_ => workSource(false, true), config.detectionWindowSize);
 }
 
 workSource(true);
