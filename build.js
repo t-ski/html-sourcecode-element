@@ -6,12 +6,12 @@ const config = {
     cssRenderMark: "@CSS",
     detectionWindowSize: 2500,
     distFilePrefix: "codecomponent",
-    reqScriptFileName: "HTMLCodeComponent.js",
-    reqStyleFileName: "required.css"
+    reqScriptFilePath: "../HTMLCodeComponent.js",
+    reqStyleFilePath: "../required.css"
 };
 
 const path = {
-    src: join(__dirname, "src"),
+    src: join(__dirname, "src/packages"),
     dist: join(__dirname, "dist")
 };
 
@@ -28,15 +28,14 @@ function workSource(force, noCompression) {
     }, (_, dirents) => {
         dirents = dirents
         .filter(dirent => {
-            return (dirent.name !== config.reqStyleFileName)
-                && (dirent.name !== config.reqScriptFileName);
+            return (dirent.name !== config.reqStyleFilePath)
+                && (dirent.name !== config.reqScriptFilePath);
         });
 
-        const updateAll = hasBeenModified(config.reqStyleFileName)
-                       || hasBeenModified(config.reqScriptFileName);
-
-        reqSource = (force || updateAll)
-        ? readSource(config.reqScriptFileName, config.reqStyleFileName)
+        force = force ?? (hasBeenModified(config.reqStyleFilePath) ?? hasBeenModified(config.reqScriptFilePath));
+        console.log(force)
+        reqSource = force
+        ? readSource(config.reqScriptFilePath, config.reqStyleFilePath)
         : reqSource;
 
         const processedFiles = [];
@@ -62,7 +61,7 @@ function workSource(force, noCompression) {
             }
 
             if(!/\.js$/.test(fileName)
-            || (!force && !updateAll && !updateCurrent)
+            || (!force && !updateCurrent)
                 && hasBeenModified) {
                 return;
             }
@@ -121,10 +120,13 @@ function writeDist(srcFileName, isRefresh = true, noCompression = false) {
 }
 
 
-if(/^-(-watch|W)$/.test(process.argv.slice(2)[0])) {
-    console.log("\x1b[32mWatching source for incremental builds.\x1b[0m");
+if(!/^-(-watch|W)$/.test(process.argv.slice(2)[0])) {
+    workSource(true);
 
+    console.log("\x1b[32mDistributable built successfully.\x1b[0m");
+} else {
     setInterval(_ => workSource(false, true), config.detectionWindowSize);
-}
+    workSource(true, true);
 
-workSource(true);
+    console.log("\x1b[32mWatching source for incremental builds.\x1b[0m");
+}

@@ -88,10 +88,8 @@ class HTMLCodeComponent extends HTMLElement {
             devConfig.observedAttributes
             .filter(attr => customConfigObj[attr] != undefined)
             .forEach(attr => {
-                element.setAttribute(attr, customConfigObj);
+                element[attr] = customConfigObj;
             });
-
-            element.#update(element.textContent);
         });
     }
 
@@ -284,8 +282,11 @@ class HTMLCodeComponent extends HTMLElement {
             })
             .join("<br>\n");
             
-            this.#update();
+            this.#applyFormatHandler();
 
+            ![undefined, null].includes(this.typeLive)
+            && this.#applyLiveTyping();
+            
             this.#initialized = true;
         }, 0);
     }
@@ -447,16 +448,16 @@ class HTMLCodeComponent extends HTMLElement {
      * Apply line highlighting based on the related attribute.
      */
     #applyHighlighting() {
-        if(!this.highlight) {
-            return;
-        }
-        
         const lineDivs = Array.from(this.#host.querySelectorAll(".edit-out > div"));
         
         lineDivs.forEach(div => div.classList.remove("highlighted"));
         
+        if(!this.highlight) {
+            return;
+        }
+
         this.highlight
-        .split(/;/g)
+        .split(/[;,]/g)
         .map(instruction => instruction.trim())
         .forEach(instruction => {
             if(/^[0-9]+$/.test(instruction)) {
@@ -466,7 +467,7 @@ class HTMLCodeComponent extends HTMLElement {
                 return;
             }
 
-            if(!/^[0-9]+\s*,\s*[0-9]+$/.test(instruction)) {
+            if(!/^[0-9]+ *- *[0-9]+$/.test(instruction)) {
                 return;
             }
 
@@ -493,7 +494,7 @@ class HTMLCodeComponent extends HTMLElement {
         if(this.#isLiveTyping) return;
         this.#isLiveTyping = true;
 
-        const speed = parseInt(this.typeLive) || HTMLCodeComponent.#customConfig["type-live"];
+        const speed = parseFloat(this.typeLive) || HTMLCodeComponent.#customConfig["type-live"];
 
         const remainingInput = (input || this.#readBareContent())
         .split("");
@@ -512,15 +513,20 @@ class HTMLCodeComponent extends HTMLElement {
             : [25, 300];
 
             const delay = fixedDelay
-            || Math.round(((Math.random()
-            * (delayBounds[1] - delayBounds[0]))
-            + delayBounds[0]) * (speed || 1));
+            || Math.round(((Math.random() * (delayBounds[1] - delayBounds[0])) + delayBounds[0]) * (speed || 1));
 
             lastChar = curChar;
 
-            setTimeout(_ => {
-                this.#applyFormatHandler(writtenInput.join(""));
+            const curCode = writtenInput.join("");
 
+            this.#applyFormatHandler(`${
+                curCode
+            }${
+                (remainingInput.join("").match(/\n/g) ?? [])
+                .join("")
+            }`);
+
+            setTimeout(_ => {
                 (remainingInput.length > 0)
                 ? type()
                 : (this.#isLiveTyping = false);

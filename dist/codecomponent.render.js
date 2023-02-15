@@ -90,10 +90,8 @@ class HTMLCodeComponent extends HTMLElement {
             devConfig.observedAttributes
             .filter(attr => customConfigObj[attr] != undefined)
             .forEach(attr => {
-                element.setAttribute(attr, customConfigObj);
+                element[attr] = customConfigObj;
             });
-
-            element.#update(element.textContent);
         });
     }
 
@@ -286,8 +284,11 @@ class HTMLCodeComponent extends HTMLElement {
             })
             .join("<br>\n");
             
-            this.#update();
+            this.#applyFormatHandler();
 
+            ![undefined, null].includes(this.typeLive)
+            && this.#applyLiveTyping();
+            
             this.#initialized = true;
         }, 0);
     }
@@ -449,16 +450,16 @@ class HTMLCodeComponent extends HTMLElement {
      * Apply line highlighting based on the related attribute.
      */
     #applyHighlighting() {
-        if(!this.highlight) {
-            return;
-        }
-        
         const lineDivs = Array.from(this.#host.querySelectorAll(".edit-out > div"));
         
         lineDivs.forEach(div => div.classList.remove("highlighted"));
         
+        if(!this.highlight) {
+            return;
+        }
+
         this.highlight
-        .split(/;/g)
+        .split(/[;,]/g)
         .map(instruction => instruction.trim())
         .forEach(instruction => {
             if(/^[0-9]+$/.test(instruction)) {
@@ -468,7 +469,8 @@ class HTMLCodeComponent extends HTMLElement {
                 return;
             }
 
-            if(!/^[0-9]+\s*,\s*[0-9]+$/.test(instruction)) {
+            if(!/^[0-9]+ *- *[0-9]+$/.test(instruction)) {
+                console.log(instruction)
                 return;
             }
 
@@ -495,7 +497,7 @@ class HTMLCodeComponent extends HTMLElement {
         if(this.#isLiveTyping) return;
         this.#isLiveTyping = true;
 
-        const speed = parseInt(this.typeLive) || HTMLCodeComponent.#customConfig["type-live"];
+        const speed = parseFloat(this.typeLive) || HTMLCodeComponent.#customConfig["type-live"];
 
         const remainingInput = (input || this.#readBareContent())
         .split("");
@@ -514,14 +516,19 @@ class HTMLCodeComponent extends HTMLElement {
             : [25, 300];
 
             const delay = fixedDelay
-            || Math.round(((Math.random()
-            * (delayBounds[1] - delayBounds[0]))
-            + delayBounds[0]) * (speed || 1));
+            || Math.round(((Math.random() * (delayBounds[1] - delayBounds[0])) + delayBounds[0]) * (speed || 1));
 
             lastChar = curChar;
 
             setTimeout(_ => {
-                this.#applyFormatHandler(writtenInput.join(""));
+                const curCode = writtenInput.join("");
+
+                this.#applyFormatHandler(`${
+                    curCode
+                }${
+                    (remainingInput.join("").match(/\n/g) ?? [])
+                    .join("")
+                }`);
 
                 (remainingInput.length > 0)
                 ? type()
@@ -620,7 +627,7 @@ class HTMLCodeComponent extends HTMLElement {
 
 
 // Use style append routine to set required styles
-HTMLCodeComponent.appendStyle("/* DYNAMIC */:host([editable]):not([type-live]) .edit-out {position: absolute;top: 0;width: 100%;height: 100%;pointer-events: none;}:host([copyable]) .copy {display: block;}.edit {overflow: scroll;}.edit-in, .edit-out {white-space: nowrap !important;}/* STATIC *//* UNMUTABLE */:host([hidden]) {display: none !important;}:host([editable]):not([type-live]) .edit-in {display: block !important;}:host([copyable]) .copy {display: block !important;}.copy {display: none !important;}/* MUTABLE */:host {--line-height: 1.75em;}:host {position: relative;display: flex;flex-direction: row;overflow: scroll;}:host([editable]):not([type-live]) .edit {cursor: text;}.edit {position: relative;flex: 1 0 0;}.lines, .edit-in, .edit-out {padding: 0.65em 0.85em;font-family: monospace;box-sizing: border-box;}.lines, .edit-in, .edit-in > div, .edit-out > div {line-height: var(--line-height);}.edit {scroll-padding-right: 0.85rem;}.lines {text-align: right;user-select: none;}.edit-in > div, .edit-out > div {height: auto;min-height: var(--line-height);}.edit-in {display: none;min-height: fit-content;color: transparent;caret-color: slategray;}.edit-in:focus {outline: none;}.edit-out {position: relative;display: block;width: fit-content;min-width: 100%;}");
+HTMLCodeComponent.appendStyle("/* DYNAMIC */:host([editable]):not([type-live]) .edit-out {position: absolute;top: 0;width: 100%;height: 100%;pointer-events: none;}:host([copyable]) .copy {display: block;}.edit {overflow: scroll;}.edit-in, .edit-out {white-space: nowrap !important;}/* STATIC *//* UNMUTABLE */@keyframes fade-in {0%, 99% {font-size: 0 !important;}100% {font-size: inherit;}}:host([hidden]) {display: none !important;}:host([editable]):not([type-live]) .edit-in {display: block !important;}:host([type-live]) .edit {font-size: 0 !important;animation-name: fade-in;animation-duration: 200ms;animation-iteration-count: 1;}:host([copyable]) .copy {display: block !important;}.copy {display: none !important;}/* MUTABLE */:host {--line-height: 1.75em;}:host {position: relative;display: flex;flex-direction: row;overflow: scroll;}:host([editable]):not([type-live]) .edit {cursor: text;}.edit {position: relative;flex: 1 0 0;}.lines, .edit-in, .edit-out {padding: 0.65em 0.85em;font-family: monospace;box-sizing: border-box;}.lines, .edit-in, .edit-in > div, .edit-out > div {line-height: var(--line-height);}.edit {scroll-padding-right: 0.85rem;}.lines {text-align: right;user-select: none;}.edit-in > div, .edit-out > div {height: auto;min-height: var(--line-height);}.edit-in {display: none;min-height: fit-content;color: transparent;caret-color: slategray;}.edit-in:focus {outline: none;}.edit-out {position: relative;display: block;width: fit-content;min-width: 100%;}");
 
 
 // Globally register element
