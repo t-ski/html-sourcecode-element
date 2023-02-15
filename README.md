@@ -38,7 +38,7 @@ Several attribute modifiers are available:
 | `copyable` | *Enable copying of code via button* |
 | `editable` | *Enable editing of code* |
 | `highlight` | *Highlight given line(s) of code. Multiple lines to delimit with semicolon (;); line ranges to depicit with an infix dash (-).* |
-| `type-live`| *Whether to have the given code* |
+| `type-live`| *Whether to have the given code (true (default speed), or numerical value setting the speed ([0, ∞] * default speed))* |
 
 ## Global Configuration
 
@@ -53,13 +53,13 @@ HTMLCodeComponent.config({
 });
 ```
 
-Element attributes (s.a.) that might be required to have a universal effect can be defined to the config, too:
+Element attributes (s.a.) that might be required to have a universal effect can be also be assigned to the config:
 
 ``` js
 HTMLCodeComponent.config({
-    "copyable": false,
-    "editable": false,
-    "type-live": false
+    "copyable": true,
+    "editable": true,
+    "type-live": 1.5
 });
 ```
 
@@ -159,6 +159,15 @@ let code = document.querySelector("code-component#hero").innerHTML;
     code = document.querySelector("code-component#hero").textContent;
 ```
 
+## Contents
+
+The code within a component is considered text and thus accessible from the `testContent` property just as usual.
+
+``` js
+console.log(document.querySelector("code-component#hero").textContent);
+```
+
+
 ## Events
 
 Each code component emits the familiar generic events. Additionally, editable code component elements emit the `input` and the `change` event equivalent to `input` or `textarea` element.
@@ -166,6 +175,6 @@ Each code component emits the familiar generic events. Additionally, editable co
 ``` js
 document.querySelector("code-component#hero")
 .addEventListener("input", e => {
-    document.querySelector("#compiled-out").textContent = compileAndRun(e.target.textContent);
+    console.log(`Code length: ${compileAndRun(e.target.textContent.length)}`);
 });
 ```
