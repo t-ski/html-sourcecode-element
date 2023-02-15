@@ -40,10 +40,6 @@
 
             function enableHljs() {
                 HTMLCodeComponent.setFormatHandler("*", (code, language) => {
-                    code = code
-                         .replace(/&lt;/g, "<")
-                         .replace(/&gt;/g, ">");
-                    
                     return hljs.highlightAuto(code).value;
                 });
             }

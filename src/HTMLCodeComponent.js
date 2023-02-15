@@ -341,10 +341,14 @@ class HTMLCodeComponent extends HTMLElement {
         
         input = input || this.#readBareContent();
         
-        let output = input.replace(tagRegex, "&lt;$1&gt;");
-        handlers.forEach(handler => {
-            output = handler(output, language);
-        });
+        let output = input;
+        if(handlers.length) {
+            handlers.forEach(handler => {
+                output = handler(output, language);
+            });
+        } else {
+            output = output.replace(tagRegex, "&lt;$1&gt;")
+        }
 
         const openingTags = [];
         this.#host.querySelector(".edit-out").innerHTML = output
