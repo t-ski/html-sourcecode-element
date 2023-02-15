@@ -27,7 +27,7 @@ Different default themes are available. All theme styles are individually extend
 |    |    |
 | :- | :- |
 | `codecomponent.min.js`   | *Minimum component style*       |
-| `codecomponent.basic.js` | *Default basic component style* |
+| `codecomponent.basic.js` | *Basic component style (adapts dark mode)* |
 
 ## Attributes
 

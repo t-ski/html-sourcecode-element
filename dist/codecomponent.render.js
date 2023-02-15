@@ -629,15 +629,5 @@ window.customElements.define(devConfig.tagName, HTMLCodeComponent);
 
 // Globally declare element
 window.HTMLCodeComponent = HTMLCodeComponent;
-HTMLCodeComponent.appendStyle(":host {background-color: #FFFFFF;color: #111111;border: 1px solid #EAEAEA;border-radius: 0.35em;}:host(:hover) .copy {opacity: 1;}.lines, .edit {height: fit-content;min-height: 100%;}.lines {background-color: #FAFAFA;color: #7A7A7A;user-select: none;}.highlighted {background-color: #FFFFDA;}.copy {position: absolute;top: 0;right: 0;cursor: pointer;margin: 0.25em;padding: 0.75em;background-color: inherit;text-transform: uppercase;opacity: 0;user-select: none;transition: all 200ms;}@media (prefers-color-scheme: dark) {:host {background-color: #222;color: #FFF;border-color: #555;}.lines {background-color: #3E3E3E;}.highlighted {background-color: #444800;}}");
-
-let copyTimeout;
-HTMLCodeComponent.setCopyHandler(copyButton => {
-    copyButton.textContent = "Copied";
-
-    clearTimeout(copyTimeout);
-    copyTimeout = setTimeout(_ => {
-        copyButton.textContent = "Copy";
-    }, 2000);
-});
+// TODO: Pre-render / SSR module
 })();

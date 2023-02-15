@@ -1,4 +1,5 @@
 const devConfig = {
+    observedAttributes: [ "copyable", "editable", "highlight", "language", "type-live" ],
     languageWildcard: "*",
     tagName: "code-component"
 };
@@ -31,7 +32,7 @@ class HTMLCodeComponent extends HTMLElement {
     // Private
 
     static get observedAttributes() {
-        return [ "copyable", "editable", "highlight", "language", "type-live" ];
+        return this.config.observedAttributes;
     }
 
     /**
@@ -80,6 +81,18 @@ class HTMLCodeComponent extends HTMLElement {
             
             ...customConfigObj
         };
+
+        Array.from(document.querySelectorAll(devConfig.tagName))
+        .forEach(element => {
+            console.log(element);
+            devConfig.observedAttributes
+            .filter(attr => customConfigObj[attr] != undefined)
+            .forEach(attr => {
+                element.setAttribute(attr, customConfigObj);
+            });
+
+            element.#update(element.textContent);
+        });
     }
 
     /**
@@ -153,6 +166,7 @@ class HTMLCodeComponent extends HTMLElement {
     // Individual shadow DOM host elment
     #initialized;
     #host;
+    #isLiveTyping;
 
     /**
      * Create a custom code component element instance.
@@ -235,16 +249,14 @@ class HTMLCodeComponent extends HTMLElement {
 
     connectedCallback() {
         if(HTMLCodeComponent.#customConfig["no-overflow"]) {
+            this.#deleteRequiredCssRule(0);
             this.#deleteRequiredCssRule(2);
-            this.#deleteRequiredCssRule(1);
+            this.#deleteRequiredCssRule(3);
         }
 
         !(navigator.clipboard || {}).writeText
-        && this.#deleteRequiredCssRule(0);
+        && this.#deleteRequiredCssRule(1);
         
-        (this.typeLive && this.editable)
-        && this.removeAttribute("type-live");
-
         setTimeout(_ => {
             const lines = this.textContent
             .replace(/^([\t ]*\n)*/, "")
@@ -478,6 +490,9 @@ class HTMLCodeComponent extends HTMLElement {
      * @param {String} [input] Optional code text to use regardless of the actual contents
      */
     #applyLiveTyping(input) {
+        if(this.#isLiveTyping) return;
+        this.#isLiveTyping = true;
+
         const speed = parseInt(this.typeLive) || HTMLCodeComponent.#customConfig["type-live"];
 
         const remainingInput = (input || this.#readBareContent())
@@ -507,7 +522,8 @@ class HTMLCodeComponent extends HTMLElement {
                 this.#applyFormatHandler(writtenInput.join(""));
 
                 (remainingInput.length > 0)
-                && type();
+                ? type()
+                : (this.#isLiveTyping = false);
             }, delay);
         };
 
@@ -545,9 +561,6 @@ class HTMLCodeComponent extends HTMLElement {
     }
     
     set editable(value) {
-        (this.typeLive && value !== "false")
-        && this.removeAttribute("type-live");
-
         this.#setAttribute("editable", value);
     }
 
@@ -572,10 +585,6 @@ class HTMLCodeComponent extends HTMLElement {
     }
     
     set typeLive(value) {
-        if(this.editable) {
-            return;
-        }
-
         this.#setAttribute("type-live", value);
     }
 
