@@ -246,14 +246,13 @@ class HTMLCodeComponent extends HTMLElement {
     // Lifecycle
 
     connectedCallback() {
-        if(HTMLCodeComponent.#customConfig["no-overflow"]) {
-            this.#deleteRequiredCssRule(0);
-            this.#deleteRequiredCssRule(2);
-            this.#deleteRequiredCssRule(3);
-        }
-
         !(navigator.clipboard || {}).writeText
-        && this.#deleteRequiredCssRule(1);
+        && this.#deleteRequiredCssRule(0);
+        
+        if(HTMLCodeComponent.#customConfig["no-overflow"]) {
+            this.#deleteRequiredCssRule(1);
+            this.#deleteRequiredCssRule(2);
+        }
         
         setTimeout(_ => {
             const lines = this.textContent
@@ -496,9 +495,9 @@ class HTMLCodeComponent extends HTMLElement {
 
         const speed = parseFloat(this.typeLive) || HTMLCodeComponent.#customConfig["type-live"];
 
-        const remainingInput = (input || this.#readBareContent())
-        .split("");
-        
+        const remainingInput = Array.from({ length: 5 }, _ => "")  // Defer live typing start using initial empty word offset
+        .concat((input || this.#readBareContent()).split(""));
+
         const writtenInput = [];
 
         const whitespaceRegex = /^(\s|\n)$/;
