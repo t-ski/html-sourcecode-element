@@ -27,6 +27,7 @@
     margin: 0.25em;
     padding: 0.75em;
     background-color: inherit;
+    color: #7A7A7A;
     text-transform: uppercase;
     opacity: 0;
     user-select: none;
@@ -35,9 +36,9 @@
 
 @media (prefers-color-scheme: dark) {
     :host {
-        background-color: #222;
-        color: #FFF;
-        border-color: #555;
+        background-color: #222222;
+        color: #FFFFFF;
+        border-color: #6E6E6E;
     }
     .lines {
         background-color: #3E3E3E;

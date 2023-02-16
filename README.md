@@ -1,6 +1,14 @@
 # HTML Code Component
 
-Rich HTML native code component.
+Rich HTML code component `<code-component>` for native usage.
+
+- Editability
+- Copyability
+- Stylability
+- Live typability
+- Highlightability
+- Line indication
+- Auto formatting
 
 ## Integration
 
@@ -33,12 +41,12 @@ Different default themes are available. All theme styles are individually extend
 
 Several attribute modifiers are available:
 
-| Name | Purpose |
+| Attribute | Purpose |
 | :--- | :------ |
 | `copyable` | *Enable copying of code via button* |
 | `editable` | *Enable editing of code* |
 | `highlight` | *Highlight given line(s) of code. Multiple lines to delimit with semicolon (;); line ranges to depicit with an infix dash (-).* |
-| `type-live`| *Whether to have the given code (true (default speed), or numerical value setting the speed ([0, ∞] * default speed))* |
+| `type-live`| *Have given code simulated as if typed live (true (default speed), or numerical value defining the speed ([0, ∞] * default speed))* |
 
 ## Global Configuration
 
@@ -52,6 +60,11 @@ HTMLCodeComponent.config({
     "no-overflow": false
 });
 ```
+
+| Parameter | Purpose |
+| :--- | :------ |
+| `tab-size` | *Number of whitespaces to use in a tab upon formatting (indentation)* |
+| `no-overflow` | *Whether not to have lines overflow the code box, but break lines. :warning: This option interferes and thus inherently disables editability of code (i.e. `editable` attributes will be ignored).* |
 
 Element attributes (s.a.) that might be required to have a universal effect can be also be assigned to the config:
 

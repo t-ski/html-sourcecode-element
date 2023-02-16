@@ -31,9 +31,9 @@ function workSource(force, noCompression) {
             return (dirent.name !== config.reqStyleFilePath)
                 && (dirent.name !== config.reqScriptFilePath);
         });
-
+        
         force = force ?? (hasBeenModified(config.reqStyleFilePath) ?? hasBeenModified(config.reqScriptFilePath));
-        console.log(force)
+        
         reqSource = force
         ? readSource(config.reqScriptFilePath, config.reqStyleFilePath)
         : reqSource;
