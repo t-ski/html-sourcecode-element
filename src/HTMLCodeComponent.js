@@ -115,12 +115,12 @@ class HTMLCodeComponent extends HTMLElement {
         }
 
         HTMLCodeComponent.#template.content
-        .insertBefore(insertElement, HTMLCodeComponent.#template.content.firstChild);
+        .appendChild(insertElement);
         
         Array.from(document.querySelectorAll(devConfig.tagName))
         .filter(element => (element instanceof HTMLCodeComponent))
         .forEach(element => {
-            element.#host.insertBefore(insertElement.cloneNode(true), element.#host.firstChild);
+            element.#host.appendChild(insertElement.cloneNode(true));
         });
     }
     
@@ -178,8 +178,22 @@ class HTMLCodeComponent extends HTMLElement {
 
         this.#host.appendChild(HTMLCodeComponent.#template.content.cloneNode(true));
 
-        this.#host.querySelector(".edit-in")
-        .addEventListener("input", _ => {
+        const editInElement = this.#host.querySelector(".edit-in");
+        editInElement
+        .addEventListener("input", e => {
+            const isBR = node => {
+                return (node.nodeType === 1)
+                    && (node.tagName.toUpperCase() === "BR");
+            };
+
+            editInElement.childNodes
+            .forEach(node => {
+                if(!node.nextSibling
+                && isBR(node) && isBR(node.nextSibling)) return;
+
+                editInElement.removeChild(node);
+            });
+
             this.#applyFormatHandler();
         });
         
@@ -351,7 +365,7 @@ class HTMLCodeComponent extends HTMLElement {
         
         const tagRegex = /<( *(\/ *)?(?!br)[a-z][a-z0-9_-]*( +[a-z0-9_-]+ *(= *("|')((?!\\\6)(.| ))*\6)?)* *)>/gi;
         
-        input = input || this.#readBareContent();
+        input = input ?? this.#readBareContent();
         
         let output = input;
         if(handlers.length) {
@@ -416,7 +430,7 @@ class HTMLCodeComponent extends HTMLElement {
         Array.from(this.#host.querySelector(".edit-out").querySelectorAll("div"))
         .forEach(div => {
             const computedStyle = window.getComputedStyle(div);
-
+            
             lineHeight = lineHeight || parseInt(computedStyle.getPropertyValue("line-height"));
 
             const ratio = HTMLCodeComponent.#customConfig["no-overflow"]
