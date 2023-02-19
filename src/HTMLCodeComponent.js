@@ -64,7 +64,7 @@ window.HTMLCodeComponent = (_ => {
     function createTab(character) {
         return Array.from({ length: customConfig["tab-size"] }, _ => character).join("");
     }
-
+    
 
     function _update(objRef, code) {
         ![undefined, null].includes(objRef.typeLive)
@@ -372,6 +372,18 @@ window.HTMLCodeComponent = (_ => {
             host.querySelector(".edit-in")
             .addEventListener("blur", _ => this.dispatchEvent(new Event("change")));
 
+            document
+            .addEventListener("copy", e => {
+                let copyedText = (document.selection && document.selection.type != "Control")
+                ? document.selection.createRange().text
+                : (window.getSelection ?? (_ => ""))().toString();
+                
+                copyedText = copyedText
+                .replace(/\u2003/g, " ");
+                
+                navigator.clipboard.writeText(copyedText);
+            });
+            
             host.querySelector(".edit-in")
             .addEventListener("keydown", e => {
                 let appendix;
@@ -403,14 +415,12 @@ window.HTMLCodeComponent = (_ => {
             host.querySelector(".edit-in")
             .addEventListener("paste", e => {
                 e.preventDefault();
-
+                
                 const pastedText = (window.clipboardData && window.clipboardData.getData)
                 ? window.clipboardData.getData("Text")
                 : e.clipboardData.getData("text/plain");
-                
-                if(!pastedText) {
-                    return;
-                }
+
+                if(!pastedText) return;
 
                 document.execCommand("insertHTML", false, pastedText
                 .replace(/\n/g, "<br>\n"));
