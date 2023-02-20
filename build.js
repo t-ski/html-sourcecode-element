@@ -15,6 +15,13 @@ const path = {
     dist: join(__dirname, "dist")
 };
 
+const copyrightNotice = `/**\n${
+    String(readFileSync(join(__dirname, "./copyright.txt")))
+    .split(/\n/g)
+    .map(line => ` * ${line}`)
+    .join("\n")
+}\n */\n\n`;
+
 
 try { mkdirSync(path.dist); } catch {}
 
@@ -112,7 +119,7 @@ function writeDist(srcFileName, isRefresh = true, noCompression = false) {
         .replace(/\s{2,}|\n/g, " ")
     : script;
 
-    writeFileSync(join(path.dist, distFileName), script);
+    writeFileSync(join(path.dist, distFileName), `${copyrightNotice}${script}`);
 
     console.log(`\x1b[2m${
         isRefresh ? "↻" : "|"
