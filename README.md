@@ -191,3 +191,7 @@ document.querySelector("code-component#hero")
     console.log(`Code length: ${compileAndRun(e.target.textContent.length)}`);
 });
 ```
+
+## 
+
+<sub>© Thassilo Martin Schiepanski</sub>
