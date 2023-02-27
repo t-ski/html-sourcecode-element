@@ -2,11 +2,9 @@
 <html>
     <head>
         <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js"></script>
-        
         <script>
             document.write(`<script src="../dist/codecomponent.${document.location.search.slice(1) || "min"}.js">`);</script>
         </script>
-        
         <script>
             HTMLCodeComponent.appendStyle(`
                 .hljs-comment {
@@ -27,7 +25,7 @@
                 }
             `);
             
-            setTimeout(_ => HTMLCodeComponent.appendStyle("./integration.css"), 2000);
+            setTimeout(_ => HTMLCodeComponent.appendStyle("./custom.css"), 2000);
 
             HTMLCodeComponent.config({
                 "tab-size": 2,
@@ -51,65 +49,7 @@
                 });
             });
         </script>
-        
-        <style>
-            body {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 2rem;
-                padding: 2rem;
-                font-family: sans-serif;
-            }
-            h4 {
-                margin-top: 1.5rem;
-            }
-            h3:not(:first-child) {
-                margin-top: 1.75rem;
-                padding-top: 1.75rem;
-                border-top: 1px solid lightblue;
-            }
-            code-component {
-                margin-top: 1rem;
-                font-size: 13px;
-            }
-            code-component:last-of-type {
-                height: 15rem;
-            }
-            #theme-list {
-                display: flex;
-                gap: 2rem;
-                color: darkcyan;
-            }
-            #theme-list * {
-                cursor: pointer;
-            }
-            #theme-list a {
-                color: inherit;
-                text-decoration: none;
-            }
-            #theme-list span {
-                opacity: 0.5;
-            }
-            #wrapper {
-                position: relative;
-                padding: 2.5rem;
-                width: 40vw;
-                background-color: lightcyan;
-            }
-            #chain-out {
-                margin-top: 0.75rem;
-                padding: 1rem;
-                background-color: #483D8B80;
-                color: white;
-                border-radius: 4px;
-                font-family: monospace;
-            }
-            #chain-out::before {
-                content: ">: ";
-                display: inline-block;
-            }
-        </style>
+        <link rel="stylesheet" href="./integration.css">
     </head>
     <body>
         <div id="theme-list">
@@ -118,6 +58,7 @@
             <span onclick="enableHljs()">Enable HLJS</span>
         </div>
         <div id="wrapper">
+            <h2>Dynamic</h2>
             <h3>Readonly</h3>
             <h4>Simple</h4>
             <code-component language="html">
