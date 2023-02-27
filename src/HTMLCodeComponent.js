@@ -1,37 +1,15 @@
 window.HTMLCodeComponent = (_ => {
 
     const devConfig = {
-        observedAttributes: [ "copyable", "editable", "highlight", "language", "type-live" ],
         languageWildcard: "*",
-        tagName: "code-component"
+        observedAttributes: [ "copyable", "editable", "highlight", "language", "type-live" ],
+        tagName: "code-component",
+        templateIdentifierAttribute: "code-component-template"
     };
 
 
-    const objPrivatesMap = new WeakMap();
+    const objPrivateMap = new WeakMap();
 
-
-    /**
-     * Dynamic element template for single DOM bind cloning.
-     */
-     const template = document.createElement("template");
-     template.innerHTML = `
-         <div class="lines"></div>
-         <div class="edit">
-             <div class="edit-in" contenteditable data-nosnippet></div>
-             <code class="edit-out">
-                 <slot></slot>
-             </code>
-         </div>
-         <span class="copy">Copy</span>
-         <!-- © t-ski@GitHub -->
-     `.trim();
-
-    /**
-     * ...
-     */
-    const formatHandlers = new Map();
-
-    let copyHandler;
 
     /**
      * User custom static element config. Can be used to set
@@ -48,15 +26,15 @@ window.HTMLCodeComponent = (_ => {
 
 
     function setObjPrivate(objRef, key, value) {
-        const map = objPrivatesMap.get(objRef) ?? new Map();
+        const map = objPrivateMap.get(objRef) ?? new Map();
 
         map.set(key, value);
 
-        objPrivatesMap.set(objRef, map);
+        objPrivateMap.set(objRef, map);
     }
 
     function getObjPrivate(objRef, key) {
-        const map = objPrivatesMap.get(objRef);
+        const map = objPrivateMap.get(objRef);
         
         return map ? map.get(key) : undefined;
     }
@@ -651,8 +629,37 @@ window.HTMLCodeComponent = (_ => {
     };
 
 
-    // Use style append routine to set required styles
-    HTMLCodeComponent.appendStyle("@CSS");
+    /**
+     * Optional code format handler callbacks (per language).
+     */
+    const formatHandlers = new Map();
+    
+    /**
+     * Optional copy handler callback.
+     */
+    let copyHandler;
+
+    /**
+     * Dynamic element template for single DOM bind cloning.
+     */
+    let template = document.querySelector(`template[${devConfig.templateIdentifierAttribute}]`);
+    if(!template) {
+        template = document.createElement("template");
+        template.innerHTML = `
+            <div class="lines"></div>
+            <div class="edit">
+                <div class="edit-in" contenteditable data-nosnippet></div>
+                <code class="edit-out">
+                    <slot></slot>
+                </code>
+            </div>
+            <span class="copy">Copy</span>
+            <!-- © t-ski@GitHub -->
+        `.trim();
+    } else {
+        // Use style append routine to set required styles
+        HTMLCodeComponent.appendStyle("@CSS");
+    }
 
 
     // Globally register element
