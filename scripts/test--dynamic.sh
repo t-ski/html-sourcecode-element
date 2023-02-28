@@ -1,4 +1,4 @@
 #!/bin/bash
 
 open ./test/integration--dynamic.html
-node build --watch
+node ./scripts/build--dynamic.js --watch
