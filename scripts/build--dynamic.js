@@ -11,12 +11,12 @@ const config = {
 };
 
 const path = {
-    src: join(__dirname, "src/packages"),
-    dist: join(__dirname, "dist")
+    src: join(__dirname, "../src/packages"),
+    dist: join(__dirname, "../dist")
 };
 
 const copyrightNotice = `/**\n${
-    String(readFileSync(join(__dirname, "./copyright.txt")))
+    String(readFileSync(join(__dirname, "../copyright.txt")))
     .split(/\n/g)
     .map(line => ` * ${line}`)
     .join("\n")
@@ -129,8 +129,6 @@ function writeDist(srcFileName, isRefresh = true, noCompression = false) {
 
 if(!/^-(-watch|W)$/.test(process.argv.slice(2)[0])) {
     workSource(true);
-
-    console.log("\x1b[32mDistributable built successfully.\x1b[0m");
 } else {
     setInterval(_ => workSource(false, true), config.detectionWindowSize);
     workSource(true, true);

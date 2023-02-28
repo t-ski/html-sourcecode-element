@@ -20,18 +20,19 @@ const templateMarkup = `
 
 
 function render(markup, styles) {
-    const insertIndex = markup.search(/< *\/ *(head|body)([^<]|\s)*>/i);
+    const insertIndex = markup.search(/\n?< *\/ *(head|body)([^<]|\s)*>/i);
 
     if(insertIndex < 0) return markup;
 
-    return `${markup.slice(0, insertIndex)}
+    return `${markup.slice(0, insertIndex)}${`
         <template>
             ${templateMarkup}
             ${styles
             ? `<style>${styles}</style>`
             : ""}
-        </template>
-    ${markup.slice(insertIndex)}`;
+        </template>`
+        .replace(/\n|\s{2,}/g, "")
+    }${markup.slice(insertIndex)}`;
 }
 
 
@@ -41,8 +42,8 @@ module.exports.render = function(config = {}) {
     let markup = config.sourcePath
     ? String(readFileSync(config.sourcePath))
     : config.sourceCode;
-    
-    markup = render(markup);
+
+    markup = render(markup, config.styles);
     
     (config.distCallback instanceof Function)
     && config.distCallback(markup);

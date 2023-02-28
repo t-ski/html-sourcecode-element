@@ -1,0 +1,20 @@
+{
+  "name": "html-code-component",
+  "version": "0.9.0",
+  "description": "Rich HTML code component `<code-component>` for native usage.",
+  "main": "./dist/app.js",
+  "scripts": {
+    "build": "./scripts/build.sh",
+    "test:static": "./scripts/test--static.sh",
+    "test:dynamic": "./scripts/test--dynamic.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/t-ski/html-code-component.git"
+  },
+  "author": "Thassilo Martin Schiepanski",
+  "bugs": {
+    "url": "https://github.com/t-ski/html-code-component/issues"
+  },
+  "homepage": "https://github.com/t-ski/html-code-component#readme"
+}
