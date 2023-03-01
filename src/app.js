@@ -20,11 +20,9 @@ const templateMarkup = `
 
 
 function insertMarkup(sourceMarkup, insertMarkup) {
-    let insertIndex = sourceMarkup.match(/\s*\n?\s*< *(head|body)([^<]|\s)*>/i);
+    let insertIndex = sourceMarkup.search(/\s*\n?\s*< *(script|\/ *(head|body))( ([^<]|\s)*>|\s|>)/i);
 
-    if(!insertIndex) return sourceMarkup;
-
-    insertIndex = sourceMarkup.indexOf(insertIndex[0]) + insertIndex[0].length;
+    if(insertIndex <= 0) return sourceMarkup;
 
     const indentation = (sourceMarkup.slice(insertIndex).match(/ +/) ?? [""])[0];
 
