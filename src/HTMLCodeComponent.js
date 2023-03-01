@@ -571,7 +571,9 @@ window.HTMLCodeComponent = (_ => {
      * the !important property. Multiple styles can be provided.
      * @param {String} cssRulesOrHref CSS rules
      */
-    HTMLCodeComponent.appendStyle = function(cssRulesOrHref) {
+    HTMLCodeComponent.appendStyle = function(cssRulesOrHref) { appendStyle(cssRulesOrHref) };
+    
+    function appendStyle(cssRulesOrHref, lowerSpecificity = false) {
         let insertElement;
 
         if(/^(https?:\/\/)?(\.\.?\/)*([^\s{}/]*\/)*[^\s{}/]+$/i.test(cssRulesOrHref)) {
@@ -586,16 +588,23 @@ window.HTMLCodeComponent = (_ => {
             .trim();
         }
 
-        template.content
-        .appendChild(insertElement);
-        
+        const getReferenceElement = parent => {
+            return lowerSpecificity
+            ? parent.querySelector("style")
+            : parent.querySelector("style:nth-of-type(2)");
+        };
+
+        template.content.insertBefore(insertElement, getReferenceElement(template.content));
+
         Array.from(document.querySelectorAll(devConfig.tagName))
         .filter(element => (element instanceof HTMLCodeComponent))
         .forEach(element => {
-            getObjPrivate(element, "host").appendChild(insertElement.cloneNode(true));
+            const host = getObjPrivate(element, "host");
+            
+            host.insertBefore(insertElement.cloneNode(true), getReferenceElement(host));
         });
     };
-    
+
     /**
      * Set the formatting handler for a certain language.
      * @param {String} languageName Language name (* wildcard for any)
@@ -661,7 +670,7 @@ window.HTMLCodeComponent = (_ => {
     window.customElements.define(devConfig.tagName, HTMLCodeComponent);
 
     // Use style append routine to set required styles
-    HTMLCodeComponent.appendStyle("@CSS");
+    appendStyle("@CSS", true);
 
 
     // Globally declare element
