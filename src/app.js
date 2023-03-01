@@ -30,6 +30,9 @@ function insertMarkup(sourceMarkup, insertMarkup) {
 }
 
 function renderTemplate(markup, styles) {
+    markup = markup
+    .replace(new RegExp(`\\s*\\n?\\s*<template ${devConfig.templateIdentifierAttribute}>((?!<\\/template>)(.|\\s))+<\\/template>`, "i"), "");
+    
     return insertMarkup(markup, `
         <template ${devConfig.templateIdentifierAttribute}>
             ${templateMarkup}
