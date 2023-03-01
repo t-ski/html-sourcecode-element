@@ -192,7 +192,7 @@ $ npm install t-ski/html-code-component
 ### Rendering
 
 ``` js
-const { render } = require("t-ski/html-code-component");
+const { render } = require("html-code-component");
 
 render({
     sourcePath: "./dev/index.html",
@@ -208,7 +208,7 @@ render({
 | `sourceCode` | *Markup string to render. If `sourcePath` is provided, this configuration is ignored.* |
 | `distPath` | *Path which write render result to as a file.* |
 | `distCallback` | *Callback to invoke with render result.* |
-| `styles` | *Styles string (CSS) to render as custom styling.* |
+| `styles` | *Styles string to render as custom styling (CSS).* |
 
 ## 
 
