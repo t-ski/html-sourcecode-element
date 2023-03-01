@@ -2,13 +2,9 @@
 
 Rich HTML code component `<code-component>` for native usage.
 
-- Editability
-- Copyability
-- Stylability
-- Live typability
-- Highlightability
-- Line indication
-- Auto formatting
+- Editable
+- Format / highlighting interfaces
+- Simple custom styling
 
 ## Integration
 
@@ -26,16 +22,14 @@ Code component elements can be created like ordinary non-empty HTML elements: Fr
 </code-component>
 ```
 
-> Code component elements can be considered block spaced text content elements.
-
-## Themes
-
-Different default themes are available. All theme styles are individually extendable.
+By default, different themes are available for simple integration:
 
 |    |    |
 | :- | :- |
 | `codecomponent.min.js`   | *Minimum component style*       |
 | `codecomponent.basic.js` | *Basic component style (adapts dark mode)* |
+
+> Code component elements can be considered block spaced text content elements.
 
 ## Attributes
 
@@ -96,7 +90,7 @@ HTMLCodeComponent.appendStyle(`
 HTMLCodeComponent.appendStyle("/assets/css/code-component.css");
 ```
 
-### Structure
+## Structure
 
 The code component element maintains an encapsulated DOM. The underlying elements can be styles from the given styles accessing the elements directly. The internal elements are classified as follows:
 
@@ -108,7 +102,9 @@ The code component element maintains an encapsulated DOM. The underlying element
 | `highlighted` | *Highlighted lines* |
 | `copy` | *Copy button in the top-right corner* |
 
-## Format handler
+## Dynamic Handlers
+
+### Formatting
 
 In order to provide custom code formatting (usually for highlighting) use the `setFormatHandler()` method:
 
@@ -133,7 +129,7 @@ HTMLCodeComponent.setFormatHandler("*", (code, language) => {
 
 > The wildcard (working on `*`) handles any code regardless of the actual language and always applies first.
 
-### Using highlight.js
+#### Using highlight.js
 
 [highlight.js](https://highlightjs.org/) – representing the most popular code highlighting API for JS – can easily be integrated. Consider the following example:
 
@@ -145,7 +141,7 @@ HTMLCodeComponent.setFormatHandler("*", (code, language) => {
 </script>
 ```
 
-## Copy handler
+### Copy Action
 
 In order to provide custom copy action handling (usually for mutating the copy button) use the `setCopyHandler()` method:
 
@@ -163,7 +159,7 @@ HTMLCodeComponent.setCopyHandler(copyButton => {
 
 > At most one copy handler is effective. Thus, any newly set handler overrides the previous.
 
-### Slotted contents
+## Slotted contents
 
 Retrieve slotted code using either `innerHTML` or `textContent`. Both return the exact same value.
 
@@ -171,15 +167,6 @@ Retrieve slotted code using either `innerHTML` or `textContent`. Both return the
 let code = document.querySelector("code-component#hero").innerHTML;
     code = document.querySelector("code-component#hero").textContent;
 ```
-
-## Contents
-
-The code within a component is considered text and thus accessible from the `testContent` property just as usual.
-
-``` js
-console.log(document.querySelector("code-component#hero").textContent);
-```
-
 
 ## Events
 
@@ -191,6 +178,37 @@ document.querySelector("code-component#hero")
     console.log(`Code length: ${compileAndRun(e.target.textContent.length)}`);
 });
 ```
+
+## SSR
+
+The code component is integrated into the client at runtime. However, the structural integration can also be pre-rendered to resolve visible setups.
+
+### Installation
+
+```
+$ npm install t-ski/html-code-component
+```
+
+### Rendering
+
+``` js
+const { render } = require("t-ski/html-code-component");
+
+render({
+    sourcePath: "./dev/index.html",
+    distPath: "./web/index.html,
+
+    styles: String(readFileSync(join(__dirname, "./dev/code-component.css")))
+});
+```
+
+| Configuration | Purpose |
+| :------------ | :------ |
+| `sourcePath` | *Path to markup file whose content to render.* |
+| `sourceCode` | *Markup string to render. If `sourcePath` is provided, this configuration is ignored.* |
+| `distPath` | *Path which write render result to as a file.* |
+| `distCallback` | *Callback to invoke with render result.* |
+| `styles` | *Styles string (CSS) to render as custom styling.* |
 
 ## 
 

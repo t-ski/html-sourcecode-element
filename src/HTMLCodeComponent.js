@@ -4,7 +4,7 @@ window.HTMLCodeComponent = (_ => {
         languageWildcard: "*",
         observedAttributes: [ "copyable", "editable", "highlight", "language", "type-live" ],
         tagName: "code-component",
-        templateIdentifierAttribute: "code-component-template"
+        templateIdentifierAttribute: "code-component--template"
     };
 
 
@@ -557,7 +557,6 @@ window.HTMLCodeComponent = (_ => {
 
         Array.from(document.querySelectorAll(devConfig.tagName))
         .forEach(element => {
-            console.log(element);
             devConfig.observedAttributes
             .filter(attr => customConfigObj[attr] != undefined)
             .forEach(attr => {
@@ -656,14 +655,13 @@ window.HTMLCodeComponent = (_ => {
             <span class="copy">Copy</span>
             <!-- © t-ski@GitHub -->
         `.trim();
-    } else {
-        // Use style append routine to set required styles
-        HTMLCodeComponent.appendStyle("@CSS");
     }
-
 
     // Globally register element
     window.customElements.define(devConfig.tagName, HTMLCodeComponent);
+
+    // Use style append routine to set required styles
+    HTMLCodeComponent.appendStyle("@CSS");
 
 
     // Globally declare element

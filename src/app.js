@@ -1,9 +1,9 @@
 const devConfig = {
-    templateIdentifierAttribute: "code-component-template"
+    templateIdentifierAttribute: "code-component--template"
 };
 
 
-const { readFileSync, writeFileSync } = require("fs");
+const { readFileSync, writeFileSync, existsSync } = require("fs");
 
 
 const templateMarkup = `
@@ -19,21 +19,42 @@ const templateMarkup = `
 `.trim();
 
 
-function render(markup, styles) {
-    const insertIndex = markup.search(/\n?< *\/ *(head|body)([^<]|\s)*>/i);
+function insertMarkup(sourceMarkup, insertMarkup) {
+    let insertIndex = sourceMarkup.match(/\s*\n?\s*< *(head|body)([^<]|\s)*>/i);
 
-    if(insertIndex < 0) return markup;
+    if(!insertIndex) return sourceMarkup;
 
-    return `${markup.slice(0, insertIndex)}${`
-        <template>
+    insertIndex = sourceMarkup.indexOf(insertIndex[0]) + insertIndex[0].length;
+
+    const indentation = (sourceMarkup.slice(insertIndex).match(/ +/) ?? [""])[0];
+
+    return `${sourceMarkup.slice(0, insertIndex)}\n${indentation}${insertMarkup}${sourceMarkup.slice(insertIndex)}`;
+}
+
+function renderTemplate(markup, styles) {
+    return insertMarkup(markup, `
+        <template ${devConfig.templateIdentifierAttribute}>
             ${templateMarkup}
             ${styles
             ? `<style>${styles}</style>`
             : ""}
-        </template>`
-        .replace(/\n|\s{2,}/g, "")
-    }${markup.slice(insertIndex)}`;
+        </template>
+    `.replace(/\n|\s{2,}/g, ""));
 }
+
+/* function renderModule(markup, theme = "min") {
+    const themeModulePath = join(__dirname, `./codecomponent.${theme}.js`);
+
+    if(!existsSync(themeModulePath)) throw new ReferenceError(`Referenced theme does not exist '${theme}'`);
+    
+    const themeModuleScript = String(readFileSync(themeModulePath));
+
+    return insertMarkup(markup, `
+        <script>
+            ${themeModuleScript}
+        </script>
+    `);
+} */
 
 
 module.exports.render = function(config = {}) {
@@ -42,9 +63,11 @@ module.exports.render = function(config = {}) {
     let markup = config.sourcePath
     ? String(readFileSync(config.sourcePath))
     : config.sourceCode;
-
-    markup = render(markup, config.styles);
     
+    markup = renderTemplate(markup, config.styles);
+
+    /* markup = renderModule(markup, config.theme); */
+
     (config.distCallback instanceof Function)
     && config.distCallback(markup);
 
