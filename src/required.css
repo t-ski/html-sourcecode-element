@@ -50,10 +50,6 @@
     height: 100%;
     pointer-events: none;
 }
-.edit {
-    position: relative;
-    flex: 1 0 0;
-}
 .lines, .edit-in, .edit-out {
     padding: 0.65em 0.85em;
     box-sizing: border-box;
@@ -62,11 +58,18 @@
     line-height: var(--line-height);
 }
 .edit {
+    position: relative;
+    flex: 1 0 0;
+    font-family: monospace;
     scroll-padding-right: 0.85rem; 
 }
 .lines {
+    font-family: sans-serif;
     text-align: right;
     user-select: none;
+}
+.copy {
+    font-family: sans-serif;
 }
 .edit-in > div, .edit-out > div {
     height: auto;
