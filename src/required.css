@@ -31,6 +31,8 @@
 
 :host {
     --line-height: 1.75em;
+    font-family: monospace;
+    font-size: 1em;
 }
 :host {
     position: relative;
@@ -54,7 +56,6 @@
 }
 .lines, .edit-in, .edit-out {
     padding: 0.65em 0.85em;
-    font-family: monospace;
     box-sizing: border-box;
 }
 .lines, .edit-in, .edit-in > div, .edit-out > div {
