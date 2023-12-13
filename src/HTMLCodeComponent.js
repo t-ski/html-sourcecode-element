@@ -625,7 +625,7 @@ window.HTMLCodeComponent = (_ => {
             return languageName.includes(element.getAttribute("language"))
             || languageName.includes(devConfig.languageWildcard);
         })
-        .forEach(element => update(element));
+        .forEach(element => _update(element));
     };
     
     /**
