@@ -3,7 +3,6 @@ const { join } = require("path");
 
 
 compressCopy("app.js");
-compressCopy("cli.js");
 
 
 function compressCopy(fileName) {
