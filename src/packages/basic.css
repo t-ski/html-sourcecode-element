@@ -3,6 +3,7 @@
     color: #111111;
     border: 1px solid #EAEAEA;
     border-radius: 0.35em;
+    font-size: 1em;
 }
 :host(:hover) .copy {
     opacity: 1;
@@ -11,10 +12,16 @@
     height: fit-content;
     min-height: 100%;
 }
+.lines, .copy {
+    font-family: sans-serif;
+}
 .lines {
     background-color: #FAFAFA;
     color: #7A7A7A;
     user-select: none;
+}
+.edit {
+    font-family: monospace;
 }
 .highlighted {
     background-color: #FFFFDA;

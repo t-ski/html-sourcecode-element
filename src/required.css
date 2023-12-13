@@ -31,8 +31,6 @@
 
 :host {
     --line-height: 1.75em;
-    font-family: monospace;
-    font-size: 1em;
 }
 :host {
     position: relative;
@@ -60,11 +58,9 @@
 .edit {
     position: relative;
     flex: 1 0 0;
-    font-family: monospace;
     scroll-padding-right: 0.85rem; 
 }
 .lines {
-    font-family: sans-serif;
     text-align: right;
     user-select: none;
 }
