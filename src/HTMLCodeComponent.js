@@ -560,6 +560,10 @@ window.HTMLCodeComponent = (_ => {
             devConfig.observedAttributes
             .filter(attr => customConfigObj[attr] !== undefined)
             .forEach(attr => {
+                if(!customConfigObj[attr]) {
+                    element.removeAttribute(attr);
+                    return;
+                }
                 element[attr] = customConfigObj[attr];
             });
         });
