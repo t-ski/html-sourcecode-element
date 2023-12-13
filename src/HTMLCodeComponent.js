@@ -558,9 +558,9 @@ window.HTMLCodeComponent = (_ => {
         Array.from(document.querySelectorAll(devConfig.tagName))
         .forEach(element => {
             devConfig.observedAttributes
-            .filter(attr => customConfigObj[attr] != undefined)
+            .filter(attr => customConfigObj[attr] !== undefined)
             .forEach(attr => {
-                element[attr] = customConfigObj;
+                element[attr] = customConfigObj[attr];
             });
         });
     };
