@@ -3,8 +3,10 @@
 Rich HTML code component `<code-component>` for native usage.
 
 - Editable
-- Format / highlighting interfaces
+- Formatting / highlighting interface
 - Simple custom styling
+
+![](https://github.com/t-ski/html-code-component/blob/master/demo.gif)
 
 ## Integration
 
