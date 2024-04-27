@@ -1,4 +1,4 @@
-# HTML Code Component
+# HTML Code Element
 
 Rich HTML code component `<code-component>` for native usage.
 
