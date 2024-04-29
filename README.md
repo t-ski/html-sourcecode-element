@@ -6,7 +6,7 @@ Rich HTML code component `<code-element>` for native usage.
 - Formatting / highlighting interface
 - Simple custom styling
 
-![](https://github.com/t-ski/html-code-component/blob/master/demo.gif)
+![](https://github.com/t-ski/html-code-element/blob/master/demo.gif)
 
 ## Integration
 

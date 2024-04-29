@@ -1,1 +1,1 @@
-HTMLCodeComponent.appendStyle("@CSS");
+HTMLCodeElement.appendStyle("@CSS");

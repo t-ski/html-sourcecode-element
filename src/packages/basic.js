@@ -1,7 +1,7 @@
-HTMLCodeComponent.appendStyle("@CSS");
+HTMLCodeElement.appendStyle("@CSS");
 
 let copyTimeout;
-HTMLCodeComponent.setCopyHandler(copyButton => {
+HTMLCodeElement.setCopyHandler(copyButton => {
     copyButton.textContent = "Copied";
 
     clearTimeout(copyTimeout);
