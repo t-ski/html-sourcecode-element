@@ -1,7 +1,7 @@
 {
-  "name": "html-code-component",
+  "name": "html-code-element",
   "version": "0.9.0",
-  "description": "Rich HTML code component `<code-component>` for native usage.",
+  "description": "Rich HTML code component `<code-element>` for native usage.",
   "main": "./dist/app.js",
   "scripts": {
     "build": "./scripts/build.sh",
