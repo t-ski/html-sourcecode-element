@@ -1,10 +1,10 @@
-window.HTMLCodeComponent = (_ => {
+(_ => {
 
     const devConfig = {
         languageWildcard: "*",
         observedAttributes: [ "copyable", "editable", "highlight", "language", "type-live" ],
-        tagName: "code-component",
-        templateIdentifierAttribute: "code-component--template"
+        tagName: "code-element",
+        templateIdentifierAttribute: "code-element--template"
     };
 
 
@@ -308,7 +308,7 @@ window.HTMLCodeComponent = (_ => {
     /**
      * Code component element class extending the native HTML element class.
      */
-    class HTMLCodeComponent extends HTMLElement {
+    class HTMLCodeElement extends HTMLElement {
 
         /* static get observedAttributes() {
             return this.config.observedAttributes;
@@ -548,7 +548,7 @@ window.HTMLCodeComponent = (_ => {
      * the initially stated definition in order to keep defaults.
      * @param {*} customConfigObj 
      */
-    HTMLCodeComponent.config = function(customConfigObj) {
+    HTMLCodeElement.config = function(customConfigObj) {
         customConfig = {
             ...customConfig,
             
@@ -575,7 +575,7 @@ window.HTMLCodeComponent = (_ => {
      * the !important property. Multiple styles can be provided.
      * @param {String} cssRulesOrHref CSS rules
      */
-    HTMLCodeComponent.appendStyle = function(cssRulesOrHref) { appendStyle(cssRulesOrHref) };
+    HTMLCodeElement.appendStyle = function(cssRulesOrHref) { appendStyle(cssRulesOrHref) };
     
     function appendStyle(cssRulesOrHref, lowerSpecificity = false) {
         let insertElement;
@@ -601,7 +601,7 @@ window.HTMLCodeComponent = (_ => {
         template.content.insertBefore(insertElement, getReferenceElement(template.content));
 
         Array.from(document.querySelectorAll(devConfig.tagName))
-        .filter(element => (element instanceof HTMLCodeComponent))
+        .filter(element => (element instanceof HTMLCodeElement))
         .forEach(element => {
             const host = getObjPrivate(element, "host");
             
@@ -614,7 +614,7 @@ window.HTMLCodeComponent = (_ => {
      * @param {String} languageName Language name (* wildcard for any)
      * @param {Function} handler Handler callback (=> code, actual language)
      */
-    HTMLCodeComponent.setFormatHandler = function(languageName, handler) {
+    HTMLCodeElement.setFormatHandler = function(languageName, handler) {
         languageName = !Array.isArray(languageName)
         ? [ languageName ] : languageName;
 
@@ -624,7 +624,7 @@ window.HTMLCodeComponent = (_ => {
         });
         
         Array.from(document.querySelectorAll(devConfig.tagName))
-        .filter(element => (element instanceof HTMLCodeComponent))
+        .filter(element => (element instanceof HTMLCodeElement))
         .filter(element => {
             return languageName.includes(element.getAttribute("language"))
             || languageName.includes(devConfig.languageWildcard);
@@ -636,7 +636,7 @@ window.HTMLCodeComponent = (_ => {
      * Set the unique copy handler.
      * @param {Function} handler Handler callback (=> copy button element)
      */
-    HTMLCodeComponent.setCopyHandler = function(handler) {
+    HTMLCodeElement.setCopyHandler = function(handler) {
         copyHandler = handler;
     };
 
@@ -671,13 +671,14 @@ window.HTMLCodeComponent = (_ => {
     }
 
     // Globally register element
-    window.customElements.define(devConfig.tagName, HTMLCodeComponent);
+    window.customElements.define("code-component", HTMLCodeElement);
+    window.customElements.define(devConfig.tagName, HTMLCodeElement);
 
     // Use style append routine to set required styles
     appendStyle("@CSS", true);
 
 
     // Globally declare element
-   return HTMLCodeComponent;
+   mwindow.HTMLCodeElement = HTMLCodeElement;
 
 })();
