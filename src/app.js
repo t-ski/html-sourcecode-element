@@ -1,5 +1,5 @@
 const devConfig = {
-    templateIdentifierAttribute: "code-component--template"
+    templateIdentifierAttribute: "code-element--template"
 };
 
 
