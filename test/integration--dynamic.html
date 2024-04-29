@@ -4,10 +4,10 @@
         <link rel="stylesheet" href="./integration.css">
         <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js"></script>
         <script>
-            document.write(`<script src="../dist/codecomponent.${document.location.search.slice(1) || "min"}.js">`);</script>
+            document.write(`<script src="../dist/codeelement.${document.location.search.slice(1) || "min"}.js">`);</script>
         </script>
         <script>
-            HTMLCodeComponent.appendStyle(`
+            HTMLCodeElement.appendStyle(`
                 .hljs-comment {
                     color: gray;
                     font-style: italic;
@@ -26,25 +26,25 @@
                 }
             `);
             
-            setTimeout(_ => HTMLCodeComponent.appendStyle("./custom.css"), 2000);
+            setTimeout(_ => HTMLCodeElement.appendStyle("./custom.css"), 2000);
 
-            HTMLCodeComponent.config({
+            HTMLCodeElement.config({
                 "tab-size": 2,
                 //"no-overflow": true
             });
 
-            HTMLCodeComponent.setFormatHandler([ "js", "javascript" ], code => {
+            HTMLCodeElement.setFormatHandler([ "js", "javascript" ], code => {
                 return code.replace(/([0-9]+)/g, '<i style="color: orange;">$1</i>');
             });
 
             function enableHljs() {
-                HTMLCodeComponent.setFormatHandler("*", (code, language) => {
+                HTMLCodeElement.setFormatHandler("*", (code, language) => {
                     return hljs.highlightAuto(code).value;
                 });
             }
 
             document.addEventListener("DOMContentLoaded", _ => {
-                document.querySelector("code-component:nth-of-type(7)")
+                document.querySelector("code-element:nth-of-type(7)")
                 .addEventListener("input", e => {
                     document.querySelector("#chain-out").textContent = ` [20]... ${e.target.innerHTML.slice(25, 50)} ...[50]`;
                 });
@@ -61,20 +61,20 @@
             <h2>Dynamic</h2>
             <h3>Readonly</h3>
             <h4>Simple</h4>
-            <code-component language="html">
+            <code-element language="html">
                 <body>
                     <h1>Heading 1</h1>
                     <p>
                         Lorem ipsum dolor sit amet
                     </p>
                 </body>
-            </code-component>
+            </code-element>
             <h4>Copyable</h4>
-            <code-component language="js" copyable>
+            <code-element language="js" copyable>
                 // Copy button enabled
-            </code-component>
+            </code-element>
             <h4>Highlighted</h4>
-            <code-component language="js" highlight="1;4-6">
+            <code-element language="js" highlight="1;4-6">
                 // Important lines are highlighted
                 
                 while(x > 0) {
@@ -82,27 +82,27 @@
                     
                     x--;
                 }
-            </code-component>
+            </code-element>
             <h4>Type Live</h4>
-            <code-component language="js" type-live>
+            <code-element language="js" type-live>
                 /*
                  * Have a more vivid experience
                  * with “live edited“ elements.
                  */
                 
                 const isSecure = (protocol === "https") && tls.enabled;
-            </code-component>
+            </code-element>
             <h4>Multiple</h4>
-            <code-component language="js" copyable highlight="4">
+            <code-element language="js" copyable highlight="4">
                 // Multiple readonly options applied
 
                 function chessEvalFunction(gs) {
                     return gs.numQueensBlack - gs.numQueensWhite + 2 * gs.numPawnsBlack;
                 }
-            </code-component>
+            </code-element>
             <h3>Editable</h3>
             <h4>Sandbox</h4>
-            <code-component language="js" editable>
+            <code-element language="js" editable>
                 // Try it yourself
                 
                 if(process.argv.slice(2)[0] === "--help") {
@@ -110,13 +110,13 @@
 
                     return help || "No help provided";
                 }
-            </code-component>
+            </code-element>
             <h4>Chained</h4>
-            <code-component language="js" editable id="chain-in">
+            <code-element language="js" editable id="chain-in">
                 // Whatever happens here affects the chained element
                 
                 console.log("Hello universe");
-            </code-component>
+            </code-element>
             <div id="chain-out"></div>
         </div>
     </body>

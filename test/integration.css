@@ -15,11 +15,11 @@ h3:not(:first-child) {
     border-top: 1px solid lightblue;
 }
 
-code-component {
+code-element {
     margin-top: 1rem;
     font-size: 13px;
 }
-code-component:last-of-type {
+code-element:last-of-type {
     height: 15rem;
 }
 

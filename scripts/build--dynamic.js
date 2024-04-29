@@ -5,8 +5,8 @@ const { join } = require("path");
 const config = {
     cssRenderMark: "@CSS",
     detectionWindowSize: 2500,
-    distFilePrefix: "codecomponent",
-    reqScriptFilePath: "../HTMLCodeComponent.js",
+    distFilePrefix: "codeelement",
+    reqScriptFilePath: "../HTMLCodeElement.js",
     reqStyleFilePath: "../required.css"
 };
 

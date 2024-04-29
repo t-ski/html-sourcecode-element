@@ -10,11 +10,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/t-ski/html-code-component.git"
+    "url": "git+https://github.com/t-ski/html-code-element.git"
   },
   "author": "Thassilo Martin Schiepanski",
   "bugs": {
-    "url": "https://github.com/t-ski/html-code-component/issues"
+    "url": "https://github.com/t-ski/html-code-element/issues"
   },
-  "homepage": "https://github.com/t-ski/html-code-component#readme"
+  "homepage": "https://github.com/t-ski/html-code-element#readme"
 }

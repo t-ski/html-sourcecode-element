@@ -671,7 +671,6 @@
     }
 
     // Globally register element
-    window.customElements.define("code-component", HTMLCodeElement);
     window.customElements.define(devConfig.tagName, HTMLCodeElement);
 
     // Use style append routine to set required styles
@@ -679,6 +678,6 @@
 
 
     // Globally declare element
-   mwindow.HTMLCodeElement = HTMLCodeElement;
+   window.HTMLCodeElement = HTMLCodeElement;
 
 })();
