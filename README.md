@@ -1,6 +1,6 @@
 # HTML Code Element
 
-Rich HTML code component `<code-component>` for native usage.
+Rich HTML code component `<code-element>` for native usage.
 
 - Editable
 - Formatting / highlighting interface
@@ -13,15 +13,15 @@ Rich HTML code component `<code-component>` for native usage.
 Integrate GitHub hosted module via script tag:
 
 ``` html
-<script src="https://t-ski.github.io/html-code-component/dist/codecomponent.basic.js"></script>
+<script src="https://t-ski.github.io/html-code-element/dist/codecomponent.basic.js"></script>
 ```
 
-Code component elements can be created like ordinary non-empty HTML elements: From markup tags or dynamic creation.
+Code elements can be created like ordinary non-empty HTML elements: From markup tags or dynamic creation.
 
 ``` html
-<code-component language="php" editable>
+<code-element language="php" editable>
     // Code goes here
-</code-component>
+</code-element>
 ```
 
 By default, different themes are available for simple integration:
@@ -31,7 +31,7 @@ By default, different themes are available for simple integration:
 | `codecomponent.min.js`   | *Minimum component style*       |
 | `codecomponent.basic.js` | *Basic component style (adapts dark mode)* |
 
-> Code component elements can be considered block spaced text content elements.
+> Code elements can be considered block spaced text content elements.
 
 ## Attributes
 
@@ -46,12 +46,12 @@ Several attribute modifiers are available:
 
 ## Global Configuration
 
-Code component elements can be adjusted on a globally uniformal basis using the static HTMLCodeComponent class context.  
+Code elements can be adjusted on a globally uniformal basis using the static HTMLCodeElement class context.  
   
-Apply settings to each successively parsed code component using the `config()` method: 
+Apply settings to each successively parsed code element using the `config()` method: 
 
 ``` js
-HTMLCodeComponent.config({
+HTMLCodeElement.config({
     "tab-size": 4,
     "no-overflow": false
 });
@@ -65,7 +65,7 @@ HTMLCodeComponent.config({
 Element attributes (s.a.) that might be required to have a universal effect can be also be assigned to the config:
 
 ``` js
-HTMLCodeComponent.config({
+HTMLCodeElement.config({
     "copyable": true,
     "editable": true,
     "type-live": 1.5
@@ -78,7 +78,7 @@ Custom styles can be provided to extend (and possibly override) the default styl
 
 ``` js
 // CSS Text overload
-HTMLCodeComponent.appendStyle(`
+HTMLCodeElement.appendStyle(`
     .edit {
         color: slategray;
     }
@@ -89,12 +89,12 @@ HTMLCodeComponent.appendStyle(`
 `);
 
 // Stylesheet href overload
-HTMLCodeComponent.appendStyle("/assets/css/code-component.css");
+HTMLCodeElement.appendStyle("/assets/css/code-component.css");
 ```
 
 ## Structure
 
-The code component element maintains an encapsulated DOM. The underlying elements can be styles from the given styles accessing the elements directly. The internal elements are classified as follows:
+The code element maintains an encapsulated DOM. The underlying elements can be styles from the given styles accessing the elements directly. The internal elements are classified as follows:
 
 | Class | Element Description |
 | :--- | :------------------- |
@@ -112,17 +112,17 @@ In order to provide custom code formatting (usually for highlighting) use the `s
 
 ``` js
 // Specific language
-HTMLCodeComponent.setFormatHandler("js", code => {
+HTMLCodeElement.setFormatHandler("js", code => {
     return formatJs(code);
 });
 
 // Specific language
-HTMLCodeComponent.setFormatHandler([ "js", "javascript" ], code => {
+HTMLCodeElement.setFormatHandler([ "js", "javascript" ], code => {
     return formatJs(code);
 });
 
 // Any language wildcard
-HTMLCodeComponent.setFormatHandler("*", (code, language) => {
+HTMLCodeElement.setFormatHandler("*", (code, language) => {
     return formatAny(code, language);
 });
 ```
@@ -139,7 +139,7 @@ HTMLCodeComponent.setFormatHandler("*", (code, language) => {
 <script src="https://unpkg.com/@highlightjs/cdn-assets@11.6.0/highlight.min.js"></script>
 
 <script>
-    HTMLCodeComponent.setFormatHandler("*", (code, language) => hljs.highlight(code, { language }).value);
+    HTMLCodeElement.setFormatHandler("*", (code, language) => hljs.highlight(code, { language }).value);
 </script>
 ```
 
@@ -149,7 +149,7 @@ In order to provide custom copy action handling (usually for mutating the copy b
 
 ``` js
 let copyTimeout;
-HTMLCodeComponent.setCopyHandler(copyButton => {
+HTMLCodeElement.setCopyHandler(copyButton => {
     copyButton.textContent = "Copied";
 
     clearTimeout(copyTimeout);
@@ -166,16 +166,16 @@ HTMLCodeComponent.setCopyHandler(copyButton => {
 Retrieve slotted code using either `innerHTML` or `textContent`. Both return the exact same value.
 
 ``` js
-let code = document.querySelector("code-component#hero").innerHTML;
-    code = document.querySelector("code-component#hero").textContent;
+let code = document.querySelector("code-element#hero").innerHTML;
+    code = document.querySelector("code-element#hero").textContent;
 ```
 
 ## Events
 
-Each code component emits the familiar generic events. Additionally, editable code component elements emit the `input` and the `change` event equivalent to `input` or `textarea` element.
+Each code element emits the familiar generic events. Additionally, editable code elements emit the `input` and the `change` event equivalent to `input` or `textarea` element.
 
 ``` js
-document.querySelector("code-component#hero")
+document.querySelector("code-element#hero")
 .addEventListener("input", e => {
     console.log(`Code length: ${compileAndRun(e.target.textContent.length)}`);
 });
@@ -183,18 +183,18 @@ document.querySelector("code-component#hero")
 
 ## SSR
 
-The code component is integrated into the client at runtime. However, the structural integration can also be pre-rendered to resolve visible setups.
+The code element is integrated into the client at runtime. However, the structural integration can also be pre-rendered to resolve visible setups.
 
 ### Installation
 
 ```
-$ npm install t-ski/html-code-component
+$ npm install t-ski/html-code-element
 ```
 
 ### Rendering
 
 ``` js
-const { render } = require("html-code-component");
+const { render } = require("html-code-element");
 
 render({
     sourcePath: "./dev/index.html",
