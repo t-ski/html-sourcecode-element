@@ -1,13 +1,1 @@
-exclude:
-  - scripts
-  - src
-  - test
-  - LICENSE
-  - README.md
-  - package.json
-  - copyright.txt
-  - .gitignore
-  - .editorconfig
-
-include:
-  - dist
+source: ./dist/

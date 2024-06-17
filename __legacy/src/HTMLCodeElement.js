@@ -1,11 +1,3 @@
-/**
- * Rich HTML code component.
- * 
- * (c) Thassilo Martin Schiepanski
- */
-
-"use strict";
-(_ => {
 (_ => {
 
     const devConfig = {
@@ -682,23 +674,10 @@
     window.customElements.define(devConfig.tagName, HTMLCodeElement);
 
     // Use style append routine to set required styles
-    appendStyle("/* DYNAMIC */:host([copyable]) .copy {display: block;}.edit {overflow: scroll;}.edit-in, .edit-out {white-space: nowrap !important;}/* STATIC *//* UNMUTABLE */:host([hidden]) {display: none !important;}:host([editable]:not([type-live])) .edit-in {display: block !important;}:host([copyable]) .copy {display: block !important;}.copy {display: none !important;}/* MUTABLE */:host {--line-height: 1.75em;}:host {position: relative;display: flex;flex-direction: row;overflow: scroll;}:host([editable]:not([type-live])) .edit {cursor: text;}:host([editable]:not([type-live])) .edit-out {position: absolute;top: 0;width: 100%;height: 100%;pointer-events: none;}.lines, .edit-in, .edit-out {padding: 0.65em 0.85em;box-sizing: border-box;}.lines, .edit-in, .edit-in > div, .edit-out > div {line-height: var(--line-height);}.edit {position: relative;flex: 1 0 0;scroll-padding-right: 0.85rem;}.lines {text-align: right;user-select: none;}.copy {font-family: sans-serif;}.edit-in > div, .edit-out > div {height: auto;min-height: var(--line-height);}.edit-in {display: none;min-height: fit-content;color: transparent;caret-color: slategray;}.edit-in:focus {outline: none;}.edit-out {position: relative;display: block;width: fit-content;min-width: 100%;}", true);
+    appendStyle("@CSS", true);
 
 
     // Globally declare element
    window.HTMLCodeElement = HTMLCodeElement;
 
-})();
-
-HTMLCodeElement.appendStyle(":host {background-color: #FFFFFF;color: #111111;border: 1px solid #EAEAEA;border-radius: 0.35em;font-size: 1em;}:host(:hover) .copy {opacity: 1;}.lines, .edit {height: fit-content;min-height: 100%;}.lines, .copy {font-family: sans-serif;}.lines {background-color: #FAFAFA;color: #7A7A7A;user-select: none;}.edit {font-family: monospace;}.highlighted {background-color: #FFFFDA;}.copy {position: absolute;top: 0;right: 0;cursor: pointer;margin: 0.25em;padding: 0.75em;background-color: inherit;color: #7A7A7A;text-transform: uppercase;opacity: 0;user-select: none;transition: all 200ms;}@media (prefers-color-scheme: dark) {:host {background-color: #222222;color: #FFFFFF;border-color: #6E6E6E;}.lines {background-color: #3E3E3E;}.highlighted {background-color: #444800;}}");
-
-let copyTimeout;
-HTMLCodeElement.setCopyHandler(copyButton => {
-    copyButton.textContent = "Copied";
-
-    clearTimeout(copyTimeout);
-    copyTimeout = setTimeout(_ => {
-        copyButton.textContent = "Copy";
-    }, 2000);
-});
 })();
