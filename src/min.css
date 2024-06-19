@@ -1,0 +1,97 @@
+:host {
+    --inset: 0.5rem;
+    --inset-v: var(--inset);
+    --inset-h: var(--inset);
+
+    position: relative;
+    display: flex;
+    font-family: monospace;
+    font-size: 1rem;
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+
+::slotted {
+    display: none !important;
+}
+
+pre {
+    margin: 0;
+}
+:host([wrap]) pre {
+    white-space: pre-wrap;
+}
+
+pre[edit] {
+    position: absolute;
+    display: inline;
+    box-sizing: border-box;
+    margin-left: var(--inset-h);
+    padding-top: calc(0.5 * var(--inset-v));
+    padding-bottom: calc(0.5 * var(--inset-v));
+    padding-right: var(--inset-h);
+    top: 0;
+    left: 0;
+    width: calc(100% - var(--inset-h));
+    height: 100%;
+    background: transparent;
+    -webkit-text-fill-color: transparent;
+    line-height: calc(1rem + var(--inset-v));
+    outline: none;
+}
+
+.wrapper {
+    user-select: none;
+    pointer-events: none;
+}
+.wrapper table {
+    table-layout: auto;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+.wrapper tr {
+    margin-top: calc(-0.25 * var(--inset-v));
+    margin-bottom: calc(-0.25 * var(--inset-v));
+}
+.wrapper tr:first-of-type {   
+    margin-top: calc(0.5 * var(--inset-v));
+}
+.wrapper tr:first-of-type td {
+    padding-top: var(--inset-v);
+}
+.wrapper tr:last-of-type td {
+    padding-bottom: var(--inset-v);
+}
+.wrapper td {
+    vertical-align: top;
+    padding-left: var(--inset-h);
+    padding-right: var(--inset-h);
+}
+
+.line-number {
+    width: min-content;
+    user-select: none;
+    pointer-events: none;
+    line-height: 1;
+    text-align: right;
+}
+
+.line-code {
+    display: block;
+    font-family: monospace;
+    min-height: calc(1rem + var(--inset-v));
+    line-height: calc(1rem + var(--inset-v));
+    margin-top: calc(-0.5 * var(--inset-v));
+}
+
+.copy {
+    position: absolute;
+    display: none;
+    top: 0;
+    right: 0;
+    color: inherit;
+}
+:host([copy]) .copy {
+    display: block;
+}

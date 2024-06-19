@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
+        <style>
+            body * { font-family: sans-serif; margin: 1rem; }
+        </style>
+        <script>
+            const theme = new URLSearchParams(document.location.search).get("theme") ?? "";
+            const script = document.createElement("script");
+            script.setAttribute("src", `../dist/HTMLCodeElement${theme ? "." : ""}${theme}.js`)
+            document.head.appendChild(script);
+            
+            const THEME = theme || "min";
+
+            setTimeout(() => {
+                HTMLCodeElement.onHighlight((code, language) => {
+                    return language
+                    ? hljs.highlight(code, { language }).value
+                    : hljs.highlightAuto(code).value;
+                });
+
+                /* HTMLCodeElement.onCopy((code, language) => {
+                    
+                }); */
+            });
+        </script>
+    </head>
+    <body>
+        <h2></h2><script>document.querySelector("h2").textContent = THEME;</script>
+        
+        <source-code editable copy type language="js" style="max-width: 500px;">
+            // Compute sum of two operands
+            function sum(a, b) {
+                return a + b;
+            }
+
+            console.log(sum(1, 2));
+        </source-code>
+        
+        <!-- <source-code editable copy style="visibility: collapse;">
+            <span hello="world">Hello world</span>
+        </source-code>
+
+        <source-code wrap style="max-width: 400px;">
+            const str = "Hello world";
+        </source-code>
+
+        <source-code style="max-width: 400px;">
+            const str = "Hello world";
+        </source-code> -->
+    </body>
+</html>

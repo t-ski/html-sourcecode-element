@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "Rich HTML code element with a native API.",
   "main": "./dist/HTMLCodeElement.js",
+  "files": [ "./dist/" ],
   "scripts": {
     "build": "node ./build.js",
     "build:watch": "node ./build.js --watch",
-    "example:view": "open ./example.html"
+    "example:view": "open ./examples/examples.html"
   },
   "repository": {
     "type": "git",

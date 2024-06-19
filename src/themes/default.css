@@ -1,0 +1,78 @@
+:host {
+    --inset: 0.65rem;
+
+    --color-bg: #F4F4F8;
+    --color-fg: #3D3D3F;
+    --color-accent: #0A95FF;
+}
+@media (prefers-color-scheme: dark) {
+    :host {
+        --color-bg: #3D3D3F;
+        --color-fg: #F4F4F8;
+    }
+}
+
+:host {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    border-radius: 0.3rem;
+}
+
+pre {
+    font-size: 0.9rem;
+}
+pre[edit]::selection {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    -webkit-text-fill-color: var(--color-bg);
+}
+
+.line-number {
+    --font-size: 0.85rem;
+
+    background-color: var(--color-bg);
+    font-size: var(--font-size);
+    filter: brightness(0.9) opacity(0.5);
+}
+.line-number::before {
+    content: "";
+    display: block;
+    height: calc(0.5 * (1rem - var(--font-size)));
+}
+
+.copy {
+    cursor: pointer;
+    margin: 0;
+    padding: var(--inset-v) calc(1.5 * var(--inset-h));
+    background-color: var(--color-bg);
+    text-transform: uppercase;
+    border: none;
+    outline: none;
+    filter: opacity(0.0);
+    transition: filter 200ms;
+}
+:host(:hover) .copy {
+    filter: opacity(1.0);
+}
+
+
+/* Highlighting */
+
+.hljs-keyword, .hljs-attr {
+    color: #F50052;
+}
+.hljs-title, .hljs-property, .hljs-type, .hljs-name {
+    color: #0056F5;
+}
+.hljs-variable, .hljs-params {
+    color: #7E47FF;
+}
+.hljs-string {
+    color: #1B998B;
+}
+.hljs-number, .hljs-literal {
+    color: #E09200 ;
+}
+.hljs-comment {
+    color: #7688A7;
+}
