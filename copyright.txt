@@ -1,3 +1,0 @@
-Rich HTML code component.
-
-(c) Thassilo Martin Schiepanski

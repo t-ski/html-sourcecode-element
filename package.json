@@ -1,12 +1,13 @@
 {
   "name": "html-code-element",
-  "version": "0.9.0",
-  "description": "Rich HTML code component `<code-element>` for native usage.",
-  "main": "./dist/app.js",
+  "version": "1.0.0",
+  "description": "Rich HTML code element with a native API.",
+  "main": "./dist/HTMLCodeElement.js",
+  "files": [ "./dist/" ],
   "scripts": {
-    "build": "./scripts/build.sh",
-    "test:static": "./scripts/test--static.sh",
-    "test:dynamic": "./scripts/test--dynamic.sh"
+    "build": "node ./build.js",
+    "build:watch": "node ./build.js --watch",
+    "example:view": "open ./examples/examples.html"
   },
   "repository": {
     "type": "git",
