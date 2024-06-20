@@ -1,0 +1,67 @@
+:host {
+    --code--keyword: #F55600;
+    --code--type: #FF7A33;
+    --code--title: #00A37D;
+    --code--variable: #38A84B;
+    --code--literal: #1A769E;
+    --code--string: #B80050;
+    --code--meta: #B76A66;
+    --code--comment: #8E7B7B;
+
+    --code--regex: var(--code--literal);
+}
+@media (prefers-color-scheme: dark) {
+    :host {
+        --code--keyword: #FF8745;
+        --code--type: #FFA270;
+        --code--title: #0CFFC6;
+        --code--variable: #69CD7A;
+        --code--literal: #3BADDF;
+        --code--string: #FF5CA3;
+        --code--meta: #CD9794;
+        --code--comment: #B0A3A3;
+    }
+}
+
+
+.hljs-keyword, .hljs-emphasis, .hljs-strong {
+    color: var(--code--keyword);
+}
+
+.hljs-type {
+    color: var(--code--type);
+}
+
+.hljs-title, .hljs-property, .hljs-name, .hljs-attr, .hljs-attribute  {
+    color: var(--code--title);
+}
+
+.hljs-variable, .hljs-doctag {
+    color: var(--code--variable);
+}
+
+.hljs-literal, .hljs-number, .hljs-quote {
+    color: var(--code--literal);
+}
+.hljs-string, .hljs-section, .hljs-bullet {
+    color: var(--code--string);
+}
+
+.hljs-regexp {
+    color: var(--code--regex);
+}
+
+.hljs-meta {
+    color: var(--code--meta);
+}
+
+.hljs-comment {
+    color: var(--code--comment);
+}
+
+.hljs-strong, .hljs-section {
+    font-weight: bold;
+}
+.hljs-emphasis {
+    font-style: italic;
+}
