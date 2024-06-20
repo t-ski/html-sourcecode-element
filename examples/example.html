@@ -3,15 +3,20 @@
     <head>
         <script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
         <style>
-            body * { font-family: sans-serif; margin: 1rem; }
+            body * { font-family: sans-serif; margin: 1.5rem; max-width: 550px; }
         </style>
         <script>
-            const theme = new URLSearchParams(document.location.search).get("theme") ?? "";
+            const params = new URLSearchParams(document.location.search);
+            const theme = params.get("theme") ?? "min";
+            const syntaxTheme = params.get("syntax");
             const script = document.createElement("script");
-            script.setAttribute("src", `../dist/HTMLCodeElement${theme ? "." : ""}${theme}.js`)
+            script.setAttribute("src", `../dist/HTMLCodeElement.${theme}${syntaxTheme ? `.${syntaxTheme}` : ""}.js`)
             document.head.appendChild(script);
             
-            const THEME = theme || "min";
+            const TITLE = `${theme} ${syntaxTheme ? `(${syntaxTheme})` : ""}`.trim();
+            document.addEventListener("DOMContentLoaded", () => {
+                document.querySelector("#title").textContent = TITLE;
+            });
 
             setTimeout(() => {
                 HTMLCodeElement.onHighlight((code, language) => {
@@ -19,7 +24,7 @@
                     ? hljs.highlight(code, { language }).value
                     : hljs.highlightAuto(code).value;
                 });
-
+                
                 /* HTMLCodeElement.onCopy((code, language) => {
                     
                 }); */
@@ -27,27 +32,63 @@
         </script>
     </head>
     <body>
-        <h2></h2><script>document.querySelector("h2").textContent = THEME;</script>
+        <h3 id="title"></h3>
         
-        <source-code editable copy type language="js" style="max-width: 500px;">
-            // Compute sum of two operands
-            function sum(a, b) {
+        <source-code edit copy type language="js">
+            // Compute sum
+            const sum = (a, b) => {
                 return a + b;
             }
-
-            console.log(sum(1, 2));
-        </source-code>
-        
-        <!-- <source-code editable copy style="visibility: collapse;">
-            <span hello="world">Hello world</span>
-        </source-code>
-
-        <source-code wrap style="max-width: 400px;">
-            const str = "Hello world";
+            
+            // Check if odd
+            const isOdd = (a) => !isNaN(a) && !!(a % 2);
         </source-code>
 
         <source-code style="max-width: 400px;">
-            const str = "Hello world";
-        </source-code> -->
+            const message = "Hello world"; // Greet everyone
+        </source-code>
+
+        <source-code scroll edit style="max-width: 400px;">
+            const message = "Hello world"; // Greet everyone
+            true && console.log(message);
+        </source-code>
+
+        <source-code language="c" maxheight="3">
+            int main() {
+                for(int i = 0 ; i < 10; hi++) {
+                    printf("Index = %d", i);
+                }
+                return 0;
+            }
+        </source-code>
+
+        <source-code language="java">
+            @Component
+            class Button {
+                protected static int i = 1;
+
+                public static void main(String args[]) {
+                    Button b = new Button();
+                }
+            }
+        </source-code>
+
+        <source-code language="md">
+            ## Documentation
+
+            Usage is _as simple as_ placing a **tag**:
+
+            ``` html
+            <source-code>
+                const i = 1;
+            </source-code>
+            ```
+
+            - Place tag
+            - Nest code
+            - State attributes
+
+            > Attributes: `edit`, `copy`, `type`, …
+        </source-code>
     </body>
 </html>

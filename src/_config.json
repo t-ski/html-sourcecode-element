@@ -1,4 +1,5 @@
 {
+    "onTypeMinLines": 5,
     "tabSize": 2,
     "tagName": "source-code"
 }

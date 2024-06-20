@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
+        <style>
+            html { font-size: 16px; background: orchid; /* background: linear-gradient(45deg, orchid 0%, turquoise 50%, slateblue 100%); */ }
+            source-code { max-width: 550px; }
+        </style>
+        <script>
+            const params = new URLSearchParams(document.location.search);
+            const theme = params.get("theme") ?? "min";
+            const syntaxTheme = params.get("syntax");
+            const script = document.createElement("script");
+            script.setAttribute("src", `../dist/HTMLSourceCodeElement.${theme}${syntaxTheme ? `.${syntaxTheme}` : ""}.js`)
+            document.head.appendChild(script);
+
+            setTimeout(() => {
+                HTMLSourceCodeElement.on("highlight", (code, language) => {
+                    return hljs.highlight(code, { language }).value;
+                }, true);
+            });
+        </script>
+    </head>
+    <body>
+        <source-code copy edit type language="html">
+            // Compute sum
+            const sum = (a, b) => return a + b;
+            
+            function print() {
+                console.log(`1 + 1 = ${2}`);
+            }
+        </source-code>
+
+    </body>
+</html>

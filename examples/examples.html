@@ -2,29 +2,43 @@
 <html>
     <head>
         <style>
+            * {
+                box-sizing: border-box;
+            }
             html {
-                margin: 2rem;
                 background-color: azure;
             }
             main {
+                padding: 2rem;
+                margin: auto;
                 width: 100%;
+                max-width: 1400px;
                 display: flex;
+                flex-wrap: wrap;
                 gap: 2rem;
             }
-            iframe {
+            main * {
                 width: calc(50% - 1rem);
-                height: 30rem;
+            }
+            iframe {
                 background-color: white;
+                height: 50rem;
                 border: none;
                 outline: none;
-                overflow: hidden;
             }
         </style>
     </head>
     <body>
         <main>
             <iframe src="./example.html"></iframe>
+            <iframe src="./example.html?syntax=matrix"></iframe>
+
+            <div>&emsp;</div>
+            <div>&emsp;</div>
+
             <iframe src="./example.html?theme=default"></iframe>
+            <iframe src="./example.html?theme=default&syntax=autumn"></iframe>
+            <iframe src="./example.html?theme=default&syntax=matrix"></iframe>
         </main>
     </body>
 </html>
