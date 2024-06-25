@@ -10,7 +10,7 @@
             const theme = params.get("theme") ?? "min";
             const syntaxTheme = params.get("syntax");
             const script = document.createElement("script");
-            script.setAttribute("src", `../dist/HTMLCodeElement.${theme}${syntaxTheme ? `.${syntaxTheme}` : ""}.js`)
+            script.setAttribute("src", `../dist/HTMLSourceCodeElement.${theme}${syntaxTheme ? `.${syntaxTheme}` : ""}.js`)
             document.head.appendChild(script);
             
             const TITLE = `${theme} ${syntaxTheme ? `(${syntaxTheme})` : ""}`.trim();
@@ -19,13 +19,15 @@
             });
 
             setTimeout(() => {
-                HTMLCodeElement.onHighlight((code, language) => {
-                    return language
-                    ? hljs.highlight(code, { language }).value
-                    : hljs.highlightAuto(code).value;
+                HTMLSourceCodeElement.on("highlight", (code, language) => {
+                    return hljs
+                    ? (language
+                        ? hljs.highlight(code, { language }).value
+                        : hljs.highlightAuto(code).value)
+                    : code;
                 });
                 
-                /* HTMLCodeElement.onCopy((code, language) => {
+                /* HTMLSourceCodeElement.on("copy", (code, language) => {
                     
                 }); */
             });
@@ -43,7 +45,7 @@
             // Check if odd
             const isOdd = (a) => !isNaN(a) && !!(a % 2);
         </source-code>
-
+        
         <source-code style="max-width: 400px;">
             const message = "Hello world"; // Greet everyone
         </source-code>
