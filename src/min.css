@@ -27,8 +27,17 @@
     overflow: scroll;
 }
 
-:host(:not([scroll])) *[mirror] {
+*::selection {
+    background-color: var(--color-bg--selection);
+    color: var(--color-fg--selection);
+    -webkit-text-fill-color: var(--color-fg--selection);
+}
+
+*[mirror] {
     white-space: pre-wrap;
+}
+:host([scroll]) *[mirror] {
+    white-space: nowrap;
 }
 
 ::slotted {
@@ -44,7 +53,7 @@ div[edit] {
     position: absolute;
     box-sizing: border-box;
     padding: calc(0.5 * var(--line-spacing)) calc(1.25 * var(--line-spacing));
-    padding-left: calc(var(--line-spacing) + var(--line-number-offset));
+    padding-left: calc(1.25 * var(--line-spacing) + var(--line-number-offset));
     top: 0;
     left: 0;
     width: 100%;
@@ -53,11 +62,6 @@ div[edit] {
     -webkit-text-fill-color: transparent;
     line-height: calc(1em + var(--line-spacing));
     outline: none;
-}
-div[edit]::selection {
-    background-color: var(--color-bg--selection);
-    color: var(--color-fg--selection);
-    -webkit-text-fill-color: var(--color-fg--selection);
 }
 
 .wrapper {
@@ -105,6 +109,7 @@ div[edit]::selection {
     right: 0;
     background-color: inherit;
     color: inherit;
+    font-size: 0.875em;
     border: none;
     outline: none;
 }

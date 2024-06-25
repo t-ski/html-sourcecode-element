@@ -1,5 +1,5 @@
 :host {
-    --line-spacing: 0.65em;
+    --line-spacing: 0.75em;
 
     --color-bg: #F7F7F7;
     --color-bg--selection: var(--color-accent);

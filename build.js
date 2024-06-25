@@ -5,7 +5,7 @@ const path = require("path");
 
 const SOURCE_PATH = path.resolve("./src/");
 const DIST_PATH = path.resolve("./dist/");
-const DIST_FILENAME = "HTMLCodeElement";
+const DIST_FILENAME = "HTMLSourceCodeElement";
 const MIN_THEME = "min";
 
 
@@ -64,7 +64,7 @@ function scanThemes(dirname) {
 function buildTheme(theme, syntax) {
     const minify = (code) => code.replace(/\n| +( )/g, "$1");
     
-    const code = fs.readFileSync(path.join(SOURCE_PATH, "HTMLCodeElement.js")).toString()
+    const code = fs.readFileSync(path.join(SOURCE_PATH, "HTMLSourceCodeElement.js")).toString()
     .replace(/require\((["'`])[^"'`]+\1\)/g, (match) => {
         const partialPath = path.join(SOURCE_PATH, match.slice(match.indexOf("(") + 2, -2).trim());
         const affix = ![ ".js", ".json" ].includes(path.extname(partialPath)) ? "`" : "";
