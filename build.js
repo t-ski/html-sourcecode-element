@@ -2,11 +2,16 @@ const EventEmitter = require("events");
 const fs = require("fs");
 const path = require("path");
 
+const _config = require("./_config.json");
 
-const SOURCE_PATH = path.resolve("./src/");
+
+const DIST_FILENAME = _config.className;
 const DIST_PATH = path.resolve("./dist/");
-const DIST_FILENAME = "HTMLSourceCodeElement";
+const ELEMENT_FILE = "element.js";
 const MIN_THEME = "min";
+const SOURCE_PATH = path.resolve("./src/");
+const SYNTAX_DIR = "./syntax";
+const THEMES_DIR = "./themes";
 
 
 class Watch extends EventEmitter {
@@ -64,7 +69,7 @@ function scanThemes(dirname) {
 function buildTheme(theme, syntax) {
     const minify = (code) => code.replace(/\n| +( )/g, "$1");
     
-    const code = fs.readFileSync(path.join(SOURCE_PATH, "HTMLSourceCodeElement.js")).toString()
+    const code = fs.readFileSync(path.join(SOURCE_PATH, ELEMENT_FILE)).toString()
     .replace(/require\((["'`])[^"'`]+\1\)/g, (match) => {
         const partialPath = path.join(SOURCE_PATH, match.slice(match.indexOf("(") + 2, -2).trim());
         const affix = ![ ".js", ".json" ].includes(path.extname(partialPath)) ? "`" : "";
@@ -77,8 +82,8 @@ function buildTheme(theme, syntax) {
     .replace(
         /@STYLE@/,
         minify([
-            theme ? fs.readFileSync(path.join(SOURCE_PATH, "./themes/", `${theme}.css`)).toString() : "",
-            syntax ? fs.readFileSync(path.join(SOURCE_PATH, "./syntax/", `${syntax}.css`)).toString() : ""  // TODO: Auto integrate hljs?
+            theme ? fs.readFileSync(path.join(SOURCE_PATH, THEMES_DIR, `${theme}.css`)).toString() : "",
+            syntax ? fs.readFileSync(path.join(SOURCE_PATH, SYNTAX_DIR, `${syntax}.css`)).toString() : ""  // TODO: Auto integrate hljs?
         ].join("\n"))
     );
     

@@ -20,6 +20,10 @@ Rich HTML code element with a native API.
 
 ## Integration
 
+#### From CDN
+
+`recommended`
+
 ``` html
 <script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.<theme>[.<highlighting>].js"></script>
 ```
@@ -27,10 +31,22 @@ Rich HTML code element with a native API.
 `<theme>` is a placeholder for an element theme identifier ([browse Themes](#themes)).  
 `<highlighting>` specifies an optional syntax highlighting scheme ([browse Highlighting](#highlighting)).
 
-#### Recommended
+> `<script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.default.autumn.js"></script>``
 
-``` html
-<script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.default.autumn.js"></script>
+#### From NPM
+
+``` console
+npm i @t-ski/html-code-element
+```
+
+``` ts
+load(theme: string = "min", highlighting?: string);
+```
+
+``` js
+import { load } from "@t-ski/html-code-element";
+
+load("default", "autumn");
 ```
 
 #### Usage

@@ -2,8 +2,12 @@
   "name": "html-code-element",
   "version": "1.0.0",
   "description": "Rich HTML code element with a native API.",
-  "main": "./dist/HTMLSourceCodeElement.js",
-  "files": [ "./dist/" ],
+  "main": "./api.js",
+  "files": [
+    "./_config.json",
+    "./dist/",
+    "./api.js"
+  ],
   "scripts": {
     "build": "rm -rf ./dist/ && node ./build.js",
     "build:watch": "node ./build.js --watch",

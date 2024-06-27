@@ -3,7 +3,7 @@
  */
 
 (_ => {    
-    const _config = require("_config.json");
+    const _config = require("../_config.json");
     const template = require("template.html");
     const minCss = require("min.css");
     
@@ -275,5 +275,5 @@
     
     window.customElements.define(_config.tagName, HTMLSourceCodeElement);
 
-    window.HTMLSourceCodeElement = HTMLSourceCodeElement;
+    window[_config.className] = HTMLSourceCodeElement;
 })();
