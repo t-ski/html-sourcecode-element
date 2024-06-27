@@ -3,7 +3,7 @@
     <head>
         <script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
         <style>
-            body * { font-family: sans-serif; margin: 1.5rem; max-width: 550px; }
+            body > * { font-family: sans-serif; margin: 1.5rem; max-width: 550px; }
         </style>
         <script>
             const params = new URLSearchParams(document.location.search);
@@ -19,6 +19,11 @@
             });
 
             setTimeout(() => {
+                const stylesheetRef = document.createElement("link");
+                stylesheetRef.setAttribute("rel", "stylesheet");
+                stylesheetRef.setAttribute("href", "./example.style.1.css");
+                HTMLSourceCodeElement.addStylesheet(stylesheetRef);
+
                 HTMLSourceCodeElement.on("highlight", (code, language) => {
                     return hljs
                     ? (language
@@ -30,13 +35,43 @@
                 /* HTMLSourceCodeElement.on("copy", (code, language) => {
                     
                 }); */
+
+                HTMLSourceCodeElement.config({
+                    copy: true
+                });
             });
+
+            setTimeout(() => {
+                HTMLSourceCodeElement.addStylesheet("./example.style.2.css");
+                
+                const mounted = document.createElement("div");
+                mounted.innerHTML = `
+                    <source-code language="md">
+                        ## Documentation
+
+                        Usage is _as simple as_ placing a **tag**:
+
+                        \`\`\` html
+                        <source-code>
+                            const i = 1;
+                        </source-code>
+                        \`\`\`
+
+                        - Place tag
+                        - Nest code
+                        - State attributes
+
+                        > Attributes: \`edit\`, \`copy\`, \`type\`, …
+                    </source-code>
+                `;
+                document.body.appendChild(mounted);
+            }, 2000);
         </script>
     </head>
     <body>
         <h3 id="title"></h3>
         
-        <source-code edit copy type language="js">
+        <!-- <source-code edit copy type language="js">
             // Compute sum
             const sum = (a, b) => {
                 return a + b;
@@ -44,7 +79,7 @@
             
             // Check if odd
             const isOdd = (a) => !isNaN(a) && !!(a % 2);
-        </source-code>
+        </source-code> -->
         
         <source-code style="max-width: 400px;">
             const message = "Hello world"; // Greet everyone
@@ -73,24 +108,6 @@
                     Button b = new Button();
                 }
             }
-        </source-code>
-
-        <source-code language="md">
-            ## Documentation
-
-            Usage is _as simple as_ placing a **tag**:
-
-            ``` html
-            <source-code>
-                const i = 1;
-            </source-code>
-            ```
-
-            - Place tag
-            - Nest code
-            - State attributes
-
-            > Attributes: `edit`, `copy`, `type`, …
         </source-code>
     </body>
 </html>

@@ -8,6 +8,8 @@
     const minCss = require("min.css");
     
     class HTMLSourceCodeElement extends HTMLElement {
+        static #config = {};
+        static #stylesheets = [];
         static #instances = [];
         
         static #highlightCallback = (code) => code;
@@ -23,6 +25,11 @@
             }, 1000);
         };
 
+        static #renderAll() {
+            HTMLSourceCodeElement.#instances
+            .forEach((instance) => instance.#render());
+        }
+
         static #decodeEntities(html) {
             const sanitizer = document.createElement("textarea");
             sanitizer.innerHTML = html;
@@ -36,14 +43,29 @@
                     break;
                 case "highlight":
                     HTMLSourceCodeElement.#highlightCallback = callback;
-                    HTMLSourceCodeElement.#instances
-                    .forEach((instance) => instance.#render());
+                    HTMLSourceCodeElement.#renderAll();
                     break;
             }
         }
 
-        static config() {
-            // TODO
+        static config(overrideConfig = {}) {
+            HTMLSourceCodeElement.#config = {
+                ...HTMLSourceCodeElement.#config,
+                ...overrideConfig
+            };
+            HTMLSourceCodeElement.#renderAll();
+        }
+
+        static addStylesheet(stylesheet) {
+            if(!(stylesheet instanceof HTMLElement)) {
+                const link = document.createElement("link");
+                link.setAttribute("rel", "stylesheet");
+                link.setAttribute("href", stylesheet);
+                stylesheet = link;
+            }
+            HTMLSourceCodeElement.#stylesheets.push(stylesheet);
+            HTMLSourceCodeElement.#instances
+            .forEach((instance) => instance.addStylesheet(stylesheet));
         }
         
         #shadowRoot;
@@ -69,6 +91,11 @@
             addStyle(`@STYLE@`);
 
             HTMLSourceCodeElement.#instances.push(this);
+
+            HTMLSourceCodeElement.#stylesheets
+            .forEach((stylesheet) => {
+                this.addStylesheet(stylesheet);
+            });
         }
         
         connectedCallback() {
@@ -87,7 +114,7 @@
                 this.#type(HTMLSourceCodeElement.#decodeEntities(lines
                         .map((line) => line.slice(minIndentation))
                         .join("\n")),
-                    this.hasAttribute("type") ? 0 : Infinity);
+                    this.#readAttribute("type") ? 0 : Infinity);
 
                 this.#recoverStyle("visibility");
             });
@@ -96,7 +123,7 @@
             this.#dom.table = this.#shadowRoot.querySelector("table");
             this.#dom.copy = this.#shadowRoot.querySelector("button");
 
-            const maxHeight = Math.max(0, parseInt(this.getAttribute("maxheight") ?? -1));
+            const maxHeight = Math.max(0, parseInt(this.#readAttribute("maxheight") ?? -1));
             maxHeight && (this.style.maxHeight
                 = `calc(${maxHeight - 0.25} * (1rem + var(--line-spacing))`);
 
@@ -122,8 +149,12 @@
             this.#dom.copy.addEventListener("click", () => this.#copy());
         }
 
-        #loadStylesheet() {
-            // TODO (?)
+        #readAttribute(name) {
+            if([ true, false ].includes(HTMLSourceCodeElement.#config[name])) {
+                return HTMLSourceCodeElement.#config[name];
+            }
+            if(!this.getAttribute(name)) return false;
+            return this.getAttribute(name) || true;
         }
 
         #style(property, value) {
@@ -146,20 +177,44 @@
             this.#code = code;
             this.#dom.table.innerHTML = "";
 
+            const tagStack = [];
             (HTMLSourceCodeElement.#highlightCallback.bind(this)(
                 this.#code,
-                this.getAttribute("language")) ?? "")
+                this.#readAttribute("language")) ?? "")
             .split(/\n/g)
             .forEach((line, i) => {
+                const taggedLine = [ ...tagStack.map((tag) => tag.outerHTML), line ].join("");
+                (line.match(
+                    /<([a-z][a-z0-9-]*)(?: +([a-z][a-z0-9-]*) *(?:= *(["'])(((?!\3).|\\\3)*(?<=[^\\]))\3)?)* *(?:\/ *)?>|<\/([a-z][a-z0-9-]*) *>/gi
+                ) ?? [])
+                .forEach((tag) => {
+                    const name = tag.match(/[a-z][a-z0-9-]*/i)[0];
+                    const isClosing = /^<\//.test(tag);
+                    !isClosing
+                    ? tagStack.unshift({
+                        name,
+                        outerHTML: tag
+                    })
+                    : ((tagStack[0] ?? {}).name === name) && tagStack.shift();
+                });
+
                 const row = this.#shadowRoot.querySelector("template").content.cloneNode(true);
                 row.querySelector(".line-number span").textContent = i + 1;
-                row.querySelector(".line-code pre").innerHTML = line;
+                row.querySelector(".line-code pre").innerHTML = taggedLine;
                 this.#dom.table.appendChild(row);
             });
 
             this.#dom.edit.style.setProperty("--line-number-offset", `${
                 this.#dom.table.querySelector("tr:last-of-type td:first-child").offsetWidth
             }px`);
+
+            const updateConfigAttribute = (name) => {
+                this.#readAttribute(name)
+                ? this.setAttribute(name, "")
+                : this.removeAttribute(name);
+            };
+            updateConfigAttribute("copy");
+            updateConfigAttribute("scroll");
         }
 
         #type(code, i = 0) {
@@ -185,7 +240,7 @@
             );
             
             if(i >= code.length) {
-                this.hasAttribute("edit")
+                this.#readAttribute("edit")
                 && this.#dom.edit.setAttribute("contenteditable", "");
 
                 this.#recoverStyle("userSelect");
@@ -211,6 +266,10 @@
             } catch(err) {} finally {
                 HTMLSourceCodeElement.#copyCallback(this.#dom);
             }
+        }
+
+        addStylesheet(stylesheet) {
+            this.#shadowRoot.appendChild(stylesheet.cloneNode(true));
         }
     }
     

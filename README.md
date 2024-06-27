@@ -2,15 +2,6 @@
 
 Rich HTML code element with a native API.
 
-``` html
-<source-code edit type language="js">
-  // Compute sum
-  const sum = (a, b) => {
-    return a + b;
-  }
-</source-code>`
-```
-
 <a href="#integration"><img src="./readme/hero.gif" width="550"></a>
 
 [1. Integration](#integration)  
@@ -23,29 +14,34 @@ Rich HTML code element with a native API.
 [3. Themes](#themes)  
 &emsp; [3.1 `min`](#default)  
 &emsp; [3.2 `default`](#default)  
-[4. Syntax Highlighting](#syntax-highlighting)  
-&emsp; [3.1 `autumn`](#autumn)  
-&emsp; [3.2 `matrix`](#matrix)  
-[5. Events API](#events-api)  
-&emsp; [3.1 on `copy`](#on-copy)  
-&emsp; [3.2 on `highlight`](#on-highlight)  
+[4. Highlighting](#highlighting)  
+&emsp; [4.1 `autumn`](#autumn)  
+&emsp; [4.2 `matrix`](#matrix)  
 
 ## Integration
 
 ``` html
-<script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.<theme>[.<syntax>].js"></script>
+<script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.<theme>[.<highlighting>].js"></script>
 ```
 
-| | | |
-| -: | :- | :- |
-| `<theme>` | General element theme | [Browse Themes](#themes) |
-| `<syntax>` | Syntax highlighting theme | [Browse Syntax Highlighting](#syntax-highlighting) |
+`<theme>` is a placeholder for an element theme identifier ([browse Themes](#themes)).  
+`<highlighting>` specifies an optional syntax highlighting scheme ([browse Highlighting](#highlighting)).
+
+#### Recommended
 
 ``` html
-<source-code edit language="html">
-  <em>Not rendered with emphasis, but literally.</em>
+<script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.default.autumn.js"></script>
+```
+
+#### Usage
+
+``` html
+<source-code edit type language="py">
+  print('Hello, world!')
 </source-code>`
 ```
+
+> ℹ️ Anything slotted within the `<source-code>` is detected as code contents. HTML code snippets particularly do not have to be escaped.
 
 ## Attributes
 
@@ -101,8 +97,29 @@ Specify language to help with highlighting (if necessary).
 
 Specify maximum amount of lines after which to enable vertical scroll.
 
-> A minimum of `5` lines are shown when used with `type`.
- 
+> ℹ️ A minimum of `5` lines are shown when used with `type`.
+
+---
+
+### Attribute API
+
+The DOM class `HTMLSourceCodeElement` is associated with the `<source-code>` tag. The DOM class provides a static configuration function to override certain attributes globally.
+
+``` ts
+HTMLSourceCodeElement
+.config(attrs: { [name: string]: boolean; });
+```
+
+``` js
+HTMLSourceCodeElement
+.config({
+  copy: true,
+  edit: false
+});
+```
+
+> ℹ️ A global configuration does not invert, but override individual attributes.
+
 ## Themes
 
 #### `min`
@@ -129,9 +146,22 @@ Default editor theme.
 | - | - |
 | <a href="#themes"><img src="./readme/light.default.png" width="385"></a> | <a href="#themes"><img src="./readme/dark.default.png" width="385"></a> |
 
-## Syntax Highlighting
+> ℹ️ Themes adopt the colour scheme preferred by the user.
 
-Out-of-the-box syntax highlighting is an optional addition to the basic API. In fact, it requires [highlight.js](https://highlightjs.org/) to work:
+---
+
+### Theme API
+
+Using the `addStylesheet()` method, custom styles can be injected into the `<source-code>` shadow DOM. The method exists both statically on `HTMLSourceCodeElement`, as well as on each individual instance. The method must be passed a URL to a stylesheet. Alternatively, a reference to a `<link>` or `<style>` element also works.
+
+``` ts
+(HTMLSourceCodeElement|instanceof HTMLSourceCodeElement)
+.addStylesheet(stylesheet: HTMLStyleElement|HTMLLinkElement|string);
+```
+
+## Highlighting
+
+Syntax highlighting is an optional addition to the basic API. In fact, it requires [highlight.js](https://highlightjs.org/) to work:
 
 ``` html
 <head>
@@ -173,12 +203,15 @@ All green, Matrix (1999) inspired syntax highlighting.
 | - | - |
 | <a href="#syntax-highlighting"><img src="./readme/light.default.matrix.png" width="385"></a> | <a href="#syntax-highlighting"><img src="./readme/dark.default.matrix.png" width="385"></a> |
 
-## Events API
+---
 
-The DOM class associated with the `<source-code>` tag is `HTMLSourceCodeElement`. The class provides a static event handler API to customise its behaviour.
+### Events API
+
+The `HTMLSourceCodeElement` DOM class provides a static API to handle events in a custom fashion.
 
 ``` ts
-HTMLSourceCodeElement.on(event: string, cb: (...args: unknown[]) => unknown)
+HTMLSourceCodeElement
+.on(event: string, cb: (...args: unknown[]) => unknown)
 ```
 
 #### on `copy`
