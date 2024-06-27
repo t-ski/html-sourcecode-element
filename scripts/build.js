@@ -2,11 +2,17 @@ const EventEmitter = require("events");
 const fs = require("fs");
 const path = require("path");
 
+const themes = require("./themes");
 
-const SOURCE_PATH = path.resolve("./src/");
-const DIST_PATH = path.resolve("./dist/");
+const _path = require("../_path.json");
+
+
+const SOURCE_PATH = path.resolve(_path.src);
+const DIST_PATH = path.resolve(_path.dist);
 const DIST_FILENAME = "HTMLSourceCodeElement";
-const MIN_THEME = "min";
+
+fs.rmSync(DIST_PATH, { recursive: true, force: true });
+fs.mkdirSync(path.join(DIST_PATH), { recursive: true});
 
 
 class Watch extends EventEmitter {
@@ -52,15 +58,6 @@ class Watch extends EventEmitter {
 }
 
 
-function scanThemes(dirname) {
-    const extensionRegex = /\.css$/;
-    return fs.readdirSync(path.join(SOURCE_PATH, dirname), { withFileTypes: true })
-    .filter((dirent) => dirent.isFile())
-    .filter((dirent) => extensionRegex.test(dirent.name))
-    .map((dirent) => dirent.name.replace(extensionRegex, ""))
-    .concat([ null ]);
-}
-
 function buildTheme(theme, syntax) {
     const minify = (code) => code.replace(/\n| +( )/g, "$1");
     
@@ -83,31 +80,23 @@ function buildTheme(theme, syntax) {
     );
     
     fs.writeFileSync(
-        path.join(DIST_PATH, `${DIST_FILENAME}.${theme ?? MIN_THEME}${syntax ? `.${syntax}` : ""}.js`),
+        path.join(DIST_PATH, `${DIST_FILENAME}.${themes.id(theme, syntax)}.js`),
         code
     );
 }
 
 
-fs.mkdirSync(path.join(DIST_PATH), { recursive: true});
-
 new Watch(SOURCE_PATH, {
     runOnce: !process.argv.slice(2).includes("--watch")
 })
 .on("build", (_, i) => {
-    const themes = scanThemes("themes");
-    const syntaxThemes = scanThemes("syntax");
-    
-    themes.forEach((theme) => {
-        syntaxThemes.forEach((syntax) => {
-            buildTheme(theme, syntax);
-        });
+    const amount = themes.matrix(async (theme, syntax) => {
+        buildTheme(theme, syntax);
     });
-
     const date = new Date();
     console.log(`${!i ? "\n" : ""}\x1b[2K\r\x1b[1A\x1b[2K\r\x1b[2m[${
         [ date.getHours(), date.getMinutes(), date.getSeconds() ]
         .map((segment) => segment.toString().padStart(2, "0"))
         .join(":")
-    }]\x1b[22m \x1b[34mBuilt ${themes.length}×${syntaxThemes.length} theme${(themes.length >> 1) ? "s" : ""} with success.\x1b[0m`);
+    }]\x1b[22m \x1b[34mBuilt ${amount.theme}×${amount.syntax} theme${(amount.theme >> 1) ? "s" : ""} with success.\x1b[0m`);
 });

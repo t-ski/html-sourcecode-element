@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "description": "Rich HTML code element with a native API.",
   "main": "./dist/HTMLSourceCodeElement.js",
-  "files": [ "./dist/" ],
+  "files": [
+    "./dist/"
+  ],
   "scripts": {
-    "build": "rm -rf ./dist/ && node ./build.js",
-    "build:watch": "node ./build.js --watch",
+    "prepare": "npm run truth",
+    "truth": "node ./test/truth.js",
+    "test": "node ./test/test.js",
+    "build": "node ./scripts/build.js",
+    "build:watch": "npm run build -- --watch",
     "examples": "open ./examples/examples.html"
   },
   "repository": {
@@ -17,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/t-ski/html-code-element/issues"
   },
-  "homepage": "https://github.com/t-ski/html-code-element#readme"
+  "homepage": "https://github.com/t-ski/html-code-element#readme",
+  "devDependencies": {
+    "puppeteer": "^22.12.1"
+  }
 }
