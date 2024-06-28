@@ -4,14 +4,14 @@ const path = require("path");
 
 const _config = require("./_config.json");
 
-
+const PATH = {
+    dist: path.resolve("./dist/"),
+    src: path.resolve("./src/"),
+    syntax: path.resolve("./src/syntax"),
+    themes: path.resolve("./src/themes")
+};
 const DIST_FILENAME = _config.className;
-const DIST_PATH = path.resolve("./dist/");
-const ELEMENT_FILE = "element.js";
-const MIN_THEME = "min";
-const SOURCE_PATH = path.resolve("./src/");
-const SYNTAX_DIR = "./syntax";
-const THEMES_DIR = "./themes";
+const DEFAULT_THEME = "min";
 
 
 class Watch extends EventEmitter {
@@ -59,7 +59,7 @@ class Watch extends EventEmitter {
 
 function scanThemes(dirname) {
     const extensionRegex = /\.css$/;
-    return fs.readdirSync(path.join(SOURCE_PATH, dirname), { withFileTypes: true })
+    return fs.readdirSync(path.join(PATH.src, dirname), { withFileTypes: true })
     .filter((dirent) => dirent.isFile())
     .filter((dirent) => extensionRegex.test(dirent.name))
     .map((dirent) => dirent.name.replace(extensionRegex, ""))
@@ -69,9 +69,9 @@ function scanThemes(dirname) {
 function buildTheme(theme, syntax) {
     const minify = (code) => code.replace(/\n| +( )/g, "$1");
     
-    const code = fs.readFileSync(path.join(SOURCE_PATH, ELEMENT_FILE)).toString()
+    const code = fs.readFileSync(path.join(PATH.src, "element.js")).toString()
     .replace(/require\((["'`])[^"'`]+\1\)/g, (match) => {
-        const partialPath = path.join(SOURCE_PATH, match.slice(match.indexOf("(") + 2, -2).trim());
+        const partialPath = path.join(PATH.src, match.slice(match.indexOf("(") + 2, -2).trim());
         const affix = ![ ".js", ".json" ].includes(path.extname(partialPath)) ? "`" : "";
         return [
             affix,
@@ -82,21 +82,21 @@ function buildTheme(theme, syntax) {
     .replace(
         /@STYLE@/,
         minify([
-            theme ? fs.readFileSync(path.join(SOURCE_PATH, THEMES_DIR, `${theme}.css`)).toString() : "",
-            syntax ? fs.readFileSync(path.join(SOURCE_PATH, SYNTAX_DIR, `${syntax}.css`)).toString() : ""  // TODO: Auto integrate hljs?
+            theme ? fs.readFileSync(path.join(PATH.themes, `${theme}.css`)).toString() : "",
+            syntax ? fs.readFileSync(path.join(PATH.syntax, `${syntax}.css`)).toString() : ""  // TODO: Auto integrate hljs?
         ].join("\n"))
     );
     
     fs.writeFileSync(
-        path.join(DIST_PATH, `${DIST_FILENAME}.${theme ?? MIN_THEME}${syntax ? `.${syntax}` : ""}.js`),
+        path.join(PATH.dist, `${DIST_FILENAME}.${theme ?? DEFAULT_THEME}${syntax ? `.${syntax}` : ""}.js`),
         code
     );
 }
 
 
-fs.mkdirSync(path.join(DIST_PATH), { recursive: true});
+fs.mkdirSync(path.join(PATH.dist), { recursive: true});
 
-new Watch(SOURCE_PATH, {
+new Watch(PATH.src, {
     runOnce: !process.argv.slice(2).includes("--watch")
 })
 .on("build", (_, i) => {

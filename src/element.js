@@ -8,26 +8,33 @@
     const minCss = require("min.css");
     
     class HTMLSourceCodeElement extends HTMLElement {
-        static #config = {};
+        static #config = {
+            tabSize: _config.defaultTabSize
+        };
+        static #globalAttrs = {};
         static #stylesheets = [];
         static #instances = [];
         
-        static #highlightCallback = (code) => code;
-        static #copyCallback = (dom) => {
-            const fallbackText = dom.copy.textContent;
-            dom.copy.style.pointerEvents = "none";
-            dom.copy.classList.add("active");
-            dom.copy.textContent = "Copied";
-            setTimeout(() => {
-                dom.copy.style.pointerEvents = "auto";
-                dom.copy.classList.remove("active");
-                dom.copy.textContent = fallbackText;
-            }, 1000);
+        static #eventHandlers = {
+            copy: (dom) => {
+                const fallbackText = dom.copy.textContent;
+                dom.copy.style.pointerEvents = "none";
+                dom.copy.classList.add("active");
+                dom.copy.textContent = "Copied";
+                setTimeout(() => {
+                    dom.copy.style.pointerEvents = "auto";
+                    dom.copy.classList.remove("active");
+                    dom.copy.textContent = fallbackText;
+                }, 1000);
+            },
+            highlight: (code) => code
         };
-
-        static #renderAll() {
+        
+        static #renderAll(forceUpdate = false) {
             HTMLSourceCodeElement.#instances
-            .forEach((instance) => instance.#render());
+            .forEach((instance) => {
+                instance.render(null, forceUpdate);
+            });
         }
 
         static #decodeEntities(html) {
@@ -37,23 +44,29 @@
         }
         
         static on(event, callback) {
+            HTMLSourceCodeElement.#eventHandlers[event] = callback;
+
             switch(event) {
-                case "copy":
-                    HTMLSourceCodeElement.#copyCallback = callback;
-                    break;
                 case "highlight":
-                    HTMLSourceCodeElement.#highlightCallback = callback;
                     HTMLSourceCodeElement.#renderAll();
                     break;
             }
         }
-
-        static config(overrideConfig = {}) {
-            HTMLSourceCodeElement.#config = {
-                ...HTMLSourceCodeElement.#config,
-                ...overrideConfig
+        
+        static globalAttrs(overrides = {}) {
+            HTMLSourceCodeElement.#globalAttrs = {
+                ...HTMLSourceCodeElement.#globalAttrs,
+                ...overrides
             };
             HTMLSourceCodeElement.#renderAll();
+        }
+        
+        static config(overrides = {}) {
+            HTMLSourceCodeElement.#config = {
+                ...HTMLSourceCodeElement.#config,
+                ...overrides
+            };
+            HTMLSourceCodeElement.#renderAll(true);
         }
 
         static addStylesheet(stylesheet) {
@@ -111,10 +124,12 @@
                 );
 
                 this.innerHTML = "";
-                this.#type(HTMLSourceCodeElement.#decodeEntities(lines
-                        .map((line) => line.slice(minIndentation))
-                        .join("\n")),
-                    this.#readAttribute("type") ? 0 : Infinity);
+                this.#type(
+                    HTMLSourceCodeElement.#decodeEntities(lines
+                    .map((line) => line.slice(minIndentation))
+                    .join("\n")),
+                    this.#readAttribute("type") ? 0 : Infinity
+                );
 
                 this.#recoverStyle("visibility");
             });
@@ -135,26 +150,27 @@
                     .replace(/< *br *\/? *>/gi, "\n")
                     .replace(/\n$/, "")
                 );
-                console.log(code)
                 
-                this.#render(code);
+                this.render(code);
+
                 this.#dispatchEvent("input", code);
             });
             this.#dom.edit.addEventListener("keydown", (e) => {
                 if(e.keyCode !== 9) return;
                 e.preventDefault();
-                document.execCommand("insertText", false, " ".repeat(_config.tabSize));
+                document.execCommand("insertText", false, " ".repeat(HTMLSourceCodeElement.#config.tabSize));
             });
             
             this.#dom.copy.addEventListener("click", () => this.#copy());
         }
 
         #readAttribute(name) {
-            if([ true, false ].includes(HTMLSourceCodeElement.#config[name])) {
-                return HTMLSourceCodeElement.#config[name];
+            if([ true, false ].includes(HTMLSourceCodeElement.#globalAttrs[name])) {
+                return HTMLSourceCodeElement.#globalAttrs[name];
             }
-            if(!this.getAttribute(name)) return false;
-            return this.getAttribute(name) || true;
+            return this.hasAttribute(name)
+            ? (this.getAttribute(name) || true)
+            : false;
         }
 
         #style(property, value) {
@@ -171,19 +187,35 @@
             this.dispatchEvent(new CustomEvent(name, { detail }));
         }
 
-        #render(code = this.#code) {
-            if(code === undefined) return;
-            
+        #updateCode(code) {
             this.#code = code;
             this.#dom.table.innerHTML = "";
 
+            const detectedIndentation = Math.min(
+                ...this.#code
+                .split(/\n/g)
+                .map((line) => line.match(/^( {2})*/)[0].length)
+                .filter((len) => len)
+            );
+            
             const tagStack = [];
-            (HTMLSourceCodeElement.#highlightCallback.bind(this)(
-                this.#code,
-                this.#readAttribute("language")) ?? "")
+            (HTMLSourceCodeElement.#eventHandlers
+                .highlight
+                .bind(this)(
+                    this.#code,
+                    this.#readAttribute("language")
+                ) ?? ""
+            )
             .split(/\n/g)
             .forEach((line, i) => {
-                const taggedLine = [ ...tagStack.map((tag) => tag.outerHTML), line ].join("");
+                const tabbedLine = line
+                .replace(new RegExp(`^( {${detectedIndentation}})*`), (indentation) => {
+                    return " ".repeat(HTMLSourceCodeElement.#config.tabSize * (indentation.length / detectedIndentation));
+                });
+                const taggedLine = [
+                    ...tagStack.map((tag) => tag.outerHTML),
+                    tabbedLine
+                ].join("");
                 (line.match(
                     /<([a-z][a-z0-9-]*)(?: +([a-z][a-z0-9-]*) *(?:= *(["'])(((?!\3).|\\\3)*(?<=[^\\]))\3)?)* *(?:\/ *)?>|<\/([a-z][a-z0-9-]*) *>/gi
                 ) ?? [])
@@ -207,14 +239,6 @@
             this.#dom.edit.style.setProperty("--line-number-offset", `${
                 this.#dom.table.querySelector("tr:last-of-type td:first-child").offsetWidth
             }px`);
-
-            const updateConfigAttribute = (name) => {
-                this.#readAttribute(name)
-                ? this.setAttribute(name, "")
-                : this.removeAttribute(name);
-            };
-            updateConfigAttribute("copy");
-            updateConfigAttribute("scroll");
         }
 
         #type(code, i = 0) {
@@ -226,7 +250,7 @@
             .map((line) => `<div>${line || "&emsp;"}</div>`)
             .join("");
             
-            this.#render(
+            this.render(
                 partialCode
                 + "\n ".repeat(
                     Math.min(
@@ -252,7 +276,6 @@
             const skip = (pattern) => {
                 i += (code.slice(i).match(pattern) ?? [ "" ])[0].length;
             };
-            skip(new RegExp(`^ {_config.tabSize}`));
             skip(/^&[a-z]+;/);
             
             setTimeout(() => {
@@ -264,8 +287,27 @@
             try {
                 navigator.clipboard.writeText(this.#code);
             } catch(err) {} finally {
-                HTMLSourceCodeElement.#copyCallback(this.#dom);
+                HTMLSourceCodeElement.#eventHandlers
+                .copy({
+                    host: this,
+                    ...this.#dom
+                });
             }
+        }
+
+        render(code, forceUpdate = false) {
+            if(!code && !this.#code) return;
+            
+            const updateConfigAttribute = (name) => {
+                this.#readAttribute(name)
+                ? this.setAttribute(name, "")
+                : this.removeAttribute(name);
+            };
+            updateConfigAttribute("copy");
+            updateConfigAttribute("scroll");
+            
+            (code || forceUpdate)
+            && this.#updateCode(code || this.#code);
         }
 
         addStylesheet(stylesheet) {

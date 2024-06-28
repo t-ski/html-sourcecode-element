@@ -117,18 +117,18 @@ Specify maximum amount of lines after which to enable vertical scroll.
 
 ---
 
-### Attribute API
+### Attributes API
 
 The DOM class `HTMLSourceCodeElement` is associated with the `<source-code>` tag. The DOM class provides a static configuration function to override certain attributes globally.
 
 ``` ts
 HTMLSourceCodeElement
-.config(attrs: { [name: string]: boolean; });
+.globalAttrs(attrs: { [name: string]: boolean; });
 ```
 
 ``` js
 HTMLSourceCodeElement
-.config({
+.globalAttrs({
   copy: true,
   edit: false
 });
@@ -193,8 +193,6 @@ Syntax highlighting is an optional addition to the basic API. In fact, it requir
 </head>
 ```
 
-> ℹ️ Omit a syntax highlighting specifier to skip highlighting.
-
 #### `autumn`
 
 ``` html
@@ -221,6 +219,26 @@ All green, Matrix (1999) inspired syntax highlighting.
 
 ---
 
+---
+
+### Config API
+
+The `HTMLSourceCodeElement` provides reasonable defaults for abstract visual or behavioural aspects. For instance, the tab width is two spaces by default. However, such aspects can be manipulated in a fashion similar to defining global attributes.
+
+``` ts
+HTMLSourceCodeElement
+.config(overrides: { [name: string]: unknown; });
+```
+
+``` js
+HTMLSourceCodeElement
+.config({
+  tabWidth: 4
+});
+```
+
+> ℹ️ A global configuration does not invert, but override individual attributes.
+
 ### Events API
 
 The `HTMLSourceCodeElement` DOM class provides a static API to handle events in a custom fashion.
@@ -234,6 +252,7 @@ HTMLSourceCodeElement
 
 ``` ts
 HTMLCodeElement.on("copy", (dom: {
+  host: HTMLSourceCodeElement;
   edit: HTMLDivElement;
   table: HTMLTableElement;
   copy: HTMLButtonElement;

@@ -4,6 +4,7 @@
         <script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
         <style>
             body > * { font-family: sans-serif; margin: 1.5rem; max-width: 550px; }
+            .copied { filter: brightness(1.5); }
         </style>
         <script>
             const params = new URLSearchParams(document.location.search);
@@ -23,20 +24,22 @@
                 stylesheetRef.setAttribute("rel", "stylesheet");
                 stylesheetRef.setAttribute("href", "./example.style.1.css");
                 HTMLSourceCodeElement.addStylesheet(stylesheetRef);
-
+                
+                HTMLSourceCodeElement.on("highlight", () => "-");
                 HTMLSourceCodeElement.on("highlight", (code, language) => {
                     return hljs
                     ? (language
                         ? hljs.highlight(code, { language }).value
                         : hljs.highlightAuto(code).value)
                     : code;
+                }, true);
+
+                Math.round(Math.random())
+                && HTMLSourceCodeElement.on("copy", (dom) => {
+                    dom.host.classList.add("copied");
                 });
                 
-                /* HTMLSourceCodeElement.on("copy", (code, language) => {
-                    
-                }); */
-
-                HTMLSourceCodeElement.config({
+                HTMLSourceCodeElement.globalAttrs({
                     copy: true
                 });
             });
@@ -65,13 +68,18 @@
                     </source-code>
                 `;
                 document.body.appendChild(mounted);
+
+                HTMLSourceCodeElement
+                .config({
+                    tabSize: 8
+                });
             }, 2000);
         </script>
     </head>
     <body>
         <h3 id="title"></h3>
         
-        <!-- <source-code edit copy type language="js">
+        <source-code edit copy type language="js">
             // Compute sum
             const sum = (a, b) => {
                 return a + b;
@@ -79,7 +87,7 @@
             
             // Check if odd
             const isOdd = (a) => !isNaN(a) && !!(a % 2);
-        </source-code> -->
+        </source-code>
         
         <source-code style="max-width: 400px;">
             const message = "Hello world"; // Greet everyone
