@@ -4,6 +4,7 @@
         <script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
         <style>
             body > * { font-family: sans-serif; margin: 1.5rem; max-width: 550px; }
+            body.dark { background-color: #202020; color: white; }
             .copied { filter: brightness(1.5); }
         </style>
         <script>
@@ -19,11 +20,16 @@
                 document.querySelector("#title").textContent = TITLE;
             });
 
+            const hasChance = () => !Math.round(Math.random());
+            
             setTimeout(() => {
+                hasChance() && document.body.classList.add("dark");
+                
                 const stylesheetRef = document.createElement("link");
                 stylesheetRef.setAttribute("rel", "stylesheet");
                 stylesheetRef.setAttribute("href", "./example.style.1.css");
-                HTMLSourceCodeElement.addStylesheet(stylesheetRef);
+                hasChance()
+                && HTMLSourceCodeElement.addStylesheet(stylesheetRef);
                 
                 HTMLSourceCodeElement.on("highlight", () => "-");
                 HTMLSourceCodeElement.on("highlight", (code, language) => {
@@ -34,18 +40,20 @@
                     : code;
                 }, true);
 
-                Math.round(Math.random())
+                hasChance()
                 && HTMLSourceCodeElement.on("copy", (dom) => {
                     dom.host.classList.add("copied");
                 });
                 
-                HTMLSourceCodeElement.globalAttrs({
+                hasChance()
+                && HTMLSourceCodeElement.globalAttrs({
                     copy: true
                 });
             });
 
             setTimeout(() => {
-                HTMLSourceCodeElement.addStylesheet("./example.style.2.css");
+                hasChance()
+                && HTMLSourceCodeElement.addStylesheet("./example.style.2.css");
                 
                 const mounted = document.createElement("div");
                 mounted.innerHTML = `
@@ -71,7 +79,7 @@
 
                 HTMLSourceCodeElement
                 .config({
-                    tabSize: 8
+                    tabSize: 4
                 });
             }, 2000);
         </script>
@@ -107,7 +115,7 @@
             }
         </source-code>
 
-        <source-code language="java">
+        <source-code edit language="java">
             @Component
             class Button {
                 protected static int i = 1;

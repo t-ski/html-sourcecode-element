@@ -122,21 +122,26 @@
                     .filter((line) => line.trim().length)
                     .map((line) => line.match(/^ */)[0].length)
                 );
+                const levelledLines = lines
+                .map((line) => line.slice(minIndentation));
+                const detectedIndentation = this.#detectIndentation(levelledLines.join("\n"));
+                const tabbedLines = levelledLines
+                .map((line) => this.#fixIndentation(detectedIndentation, line))
+                .join("\n");
 
                 this.innerHTML = "";
                 this.#type(
-                    HTMLSourceCodeElement.#decodeEntities(lines
-                    .map((line) => line.slice(minIndentation))
-                    .join("\n")),
+                    HTMLSourceCodeElement.#decodeEntities(tabbedLines),
                     this.#readAttribute("type") ? 0 : Infinity
                 );
 
                 this.#recoverStyle("visibility");
             });
 
-            this.#dom.edit = this.#shadowRoot.querySelector("div[edit]");
-            this.#dom.table = this.#shadowRoot.querySelector("table");
-            this.#dom.copy = this.#shadowRoot.querySelector("button");
+            this.#dom.edit = this.#shadowRoot.querySelector(".edit");
+            this.#dom.display = this.#shadowRoot.querySelector(".display");
+            this.#dom.table = this.#dom.display.querySelector(".display table");
+            this.#dom.copy = this.#shadowRoot.querySelector(".copy");
 
             const maxHeight = Math.max(0, parseInt(this.#readAttribute("maxheight") ?? -1));
             maxHeight && (this.style.maxHeight
@@ -190,28 +195,24 @@
         #updateCode(code) {
             this.#code = code;
             this.#dom.table.innerHTML = "";
-
-            const detectedIndentation = Math.min(
-                ...this.#code
-                .split(/\n/g)
-                .map((line) => line.match(/^( {2})*/)[0].length)
-                .filter((len) => len)
-            );
             
+            const detectedIndentation = !this.#readAttribute("edit")
+            ? this.#detectIndentation(code)
+            : 0;
+
             const tagStack = [];
             (HTMLSourceCodeElement.#eventHandlers
                 .highlight
                 .bind(this)(
-                    this.#code,
+                    code,
                     this.#readAttribute("language")
                 ) ?? ""
             )
             .split(/\n/g)
             .forEach((line, i) => {
-                const tabbedLine = line
-                .replace(new RegExp(`^( {${detectedIndentation}})*`), (indentation) => {
-                    return " ".repeat(HTMLSourceCodeElement.#config.tabSize * (indentation.length / detectedIndentation));
-                });
+                const tabbedLine = line.trim().length
+                ? (detectedIndentation ? this.#fixIndentation(detectedIndentation, line) : line)
+                : "";
                 const taggedLine = [
                     ...tagStack.map((tag) => tag.outerHTML),
                     tabbedLine
@@ -279,8 +280,29 @@
             skip(/^&[a-z]+;/);
             
             setTimeout(() => {
+                code
                 this.#type(HTMLSourceCodeElement.#decodeEntities(code), i);
             }, 50 + (!/\n/.test(code.charAt(i)) ? (Math.random() * 150) : 0));
+        }
+
+        #detectIndentation(code) {
+            return Math.min(
+                ...code
+                .split(/\n/g)
+                .filter((line) => line.trim().length)
+                .map((line) => line.match(/^( {2})*/)[0].length)
+                .filter((len) => len)
+            );
+        }
+
+        #fixIndentation(trueIndentation, line) {
+            return line
+            .replace(new RegExp(`^( {${trueIndentation}})*`), (indentation) => {
+                return " ".repeat(
+                    HTMLSourceCodeElement.#config.tabSize
+                    * (indentation.length / trueIndentation)
+                );
+            })
         }
 
         #copy() {

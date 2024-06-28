@@ -1,9 +1,9 @@
 :host {
     --line-spacing: 0.75em;
 
-    --color-bg: #F7F7F7;
+    --color-bg: #F9F9F9;
     --color-bg--selection: var(--color-accent);
-    --color-bg--translucent: #F7F7F7A0;
+    --color-bg--translucent: #F9F9F9A0;
     --color-fg: #3C3C3C;
     --color-fg--selection: var(--color-bg);
     --color-fg--line-number: #A4A4A4;

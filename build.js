@@ -4,6 +4,8 @@ const path = require("path");
 
 const _config = require("./_config.json");
 
+
+const IS_WATCH = process.argv.slice(2).includes("--watch");
 const PATH = {
     dist: path.resolve("./dist/"),
     src: path.resolve("./src/"),
@@ -67,29 +69,28 @@ function scanThemes(dirname) {
 }
 
 function buildTheme(theme, syntax) {
-    const minify = (code) => code.replace(/\n| +( )/g, "$1");
-    
     const code = fs.readFileSync(path.join(PATH.src, "element.js")).toString()
     .replace(/require\((["'`])[^"'`]+\1\)/g, (match) => {
         const partialPath = path.join(PATH.src, match.slice(match.indexOf("(") + 2, -2).trim());
         const affix = ![ ".js", ".json" ].includes(path.extname(partialPath)) ? "`" : "";
         return [
             affix,
-            minify(fs.readFileSync(partialPath).toString()),
+            fs.readFileSync(partialPath).toString(),
             affix
         ].join("");
     })
     .replace(
         /@STYLE@/,
-        minify([
+        [
             theme ? fs.readFileSync(path.join(PATH.themes, `${theme}.css`)).toString() : "",
             syntax ? fs.readFileSync(path.join(PATH.syntax, `${syntax}.css`)).toString() : ""  // TODO: Auto integrate hljs?
-        ].join("\n"))
+        ].join("\n")
     );
     
+    const minify = (code) => code.replace(/\n| +( )/g, "$1");
     fs.writeFileSync(
         path.join(PATH.dist, `${DIST_FILENAME}.${theme ?? DEFAULT_THEME}${syntax ? `.${syntax}` : ""}.js`),
-        code
+        !IS_WATCH ? minify(code) : code
     );
 }
 
@@ -97,7 +98,7 @@ function buildTheme(theme, syntax) {
 fs.mkdirSync(path.join(PATH.dist), { recursive: true});
 
 new Watch(PATH.src, {
-    runOnce: !process.argv.slice(2).includes("--watch")
+    runOnce: !IS_WATCH
 })
 .on("build", (_, i) => {
     const themes = scanThemes("themes");

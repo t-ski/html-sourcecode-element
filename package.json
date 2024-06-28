@@ -11,7 +11,8 @@
   "scripts": {
     "build": "rm -rf ./dist/ && node ./build.js",
     "build:watch": "node ./build.js --watch",
-    "examples": "open ./examples/examples.html"
+    "examples": "open ./examples/examples.html",
+    "test": "npm run build && npm run examples"
   },
   "repository": {
     "type": "git",

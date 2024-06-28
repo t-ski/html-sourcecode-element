@@ -12,10 +12,11 @@ Rich HTML code element with a native API.
 &emsp; [2.4 `language`](#language)  
 &emsp; [2.5 `scroll`](#scroll)  
 [3. Themes](#themes)  
-&emsp; [3.1 `min`](#default)  
-&emsp; [3.2 `default`](#default)  
+&emsp; [3.1 `min`](#min)  
+&emsp; [3.2 `common`](#common)  
+&emsp; [3.3 `outline`](#outline)  
 [4. Highlighting](#highlighting)  
-&emsp; [4.1 `autumn`](#autumn)  
+&emsp; [4.1 `glitch`](#glitch)  
 &emsp; [4.2 `matrix`](#matrix)  
 
 ## Integration
@@ -31,7 +32,7 @@ Rich HTML code element with a native API.
 `<theme>` is a placeholder for an element theme identifier ([browse Themes](#themes)).  
 `<highlighting>` specifies an optional syntax highlighting scheme ([browse Highlighting](#highlighting)).
 
-> `<script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.default.autumn.js"></script>``
+> `<script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.common.glitch.js"></script>``
 
 #### From NPM
 
@@ -46,7 +47,7 @@ load(theme: string = "min", highlighting?: string);
 ``` js
 import { load } from "@t-ski/html-code-element";
 
-load("default", "autumn");
+load("common", "glitch");
 ```
 
 #### Usage
@@ -146,21 +147,51 @@ HTMLSourceCodeElement
 
 Minimal editor theme.
 
-| | |
-| - | - |
-| <a href="#themes"><img src="./readme/light.min.png" width="385"></a> | <a href="#themes"><img src="./readme/dark.min.png" width="385"></a> |
+<div>
+  <a href="#themes"><img src="./readme/light.min.png" width="400"></a>
+  &emsp;
+  <a href="#themes"><img src="./readme/dark.min.png" width="400"></a>
+  <br><br>
+</div>
 
-#### `default`
+#### `common`
 
 ``` html
-<script src="…/HTMLCodeElement.default[.<syntax>].js">
+<script src="…/HTMLCodeElement.common[.<syntax>].js">
 ```
 
-Default editor theme.
+<div>
+  <a href="#themes"><img src="./readme/light.common.png" width="400"></a>
+  &emsp;
+  <a href="#themes"><img src="./readme/dark.common.png" width="400"></a>
+  <br><br>
+</div>
 
-| | |
-| - | - |
-| <a href="#themes"><img src="./readme/light.default.png" width="385"></a> | <a href="#themes"><img src="./readme/dark.default.png" width="385"></a> |
+#### `outline`
+
+``` html
+<script src="…/HTMLCodeElement.outline[.<syntax>].js">
+```
+
+<div>
+  <a href="#themes"><img src="./readme/light.outline.png" width="400"></a>
+  &emsp;
+  <a href="#themes"><img src="./readme/dark.outline.png" width="400"></a>
+  <br><br>
+</div>
+
+#### `opaque`
+
+``` html
+<script src="…/HTMLCodeElement.opaque[.<syntax>].js">
+```
+
+<div>
+  <a href="#themes"><img src="./readme/light.opaque.png" width="400"></a>
+  &emsp;
+  <a href="#themes"><img src="./readme/dark.opaque.png" width="400"></a>
+  <br><br>
+</div>
 
 > ℹ️ Themes adopt the colour scheme preferred by the user.
 
@@ -168,11 +199,34 @@ Default editor theme.
 
 ### Theme API
 
-Using the `addStylesheet()` method, custom styles can be injected into the `<source-code>` shadow DOM. The method exists both statically on `HTMLSourceCodeElement`, as well as on each individual instance. The method must be passed a URL to a stylesheet. Alternatively, a reference to a `<link>` or `<style>` element also works.
+Using the `addStylesheet()` method, custom styles can be injected into the `<source-code>` shadow DOM. The method exists both statically on `HTMLSourceCodeElement`, as well as on each individual instance. The method must be passed a URL to a stylesheet. Alternatively, an existing `<link>` or `<style>` element can be reused through a reference.
 
 ``` ts
 (HTMLSourceCodeElement|instanceof HTMLSourceCodeElement)
 .addStylesheet(stylesheet: HTMLStyleElement|HTMLLinkElement|string);
+```
+
+In a stylesheet, the `:host` selector refers to the encompassing `<source-code>`. The internals of the shadow DOM base on the following markup:
+
+``` html
+<div class="edit"></div>
+<code class="display">
+  <table>
+    <tr class="line" *>
+        <td class="line-number">
+            <span>
+              <!-- Individual line number -->
+            </span>
+        </td>
+        <td class="line-code">
+            <pre mirror>
+              <!-- Individual line code -->
+            </pre>
+        </td>
+    </tr>
+  </table>
+</code>
+<button type="button" class="copy">Copy</span>
 ```
 
 ## Highlighting
@@ -182,7 +236,7 @@ Syntax highlighting is an optional addition to the basic API. In fact, it requir
 ``` html
 <head>
   <script src="https://unpkg.com/@highlightjs/cdn-assets/highlight.min.js"></script>
-  <script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.default.autumn.js"></script>
+  <script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.common.glitch.js"></script>
   <script>
     HTMLCodeElement.on("highlight", (code, language) => {
       return ´language
@@ -193,17 +247,18 @@ Syntax highlighting is an optional addition to the basic API. In fact, it requir
 </head>
 ```
 
-#### `autumn`
+#### `glitch`
 
 ``` html
-<script src="…/HTMLCodeElement.<theme>.autumn.js">
+<script src="…/HTMLCodeElement.<theme>.glitch.js">
 ```
 
-Cozy, autumn inspired syntax highlighting.
-
-| | |
-| - | - |
-| <a href="#syntax-highlighting"><img src="./readme/light.default.autumn.png" width="385"></a> | <a href="#syntax-highlighting"><img src="./readme/dark.default.autumn.png" width="385"></a> |
+<div>
+  <a href="#themes"><img src="./readme/light.glitch.png" width="400"></a>
+  &emsp;
+  <a href="#themes"><img src="./readme/dark.glitch.png" width="400"></a>
+  <br><br>
+</div>
 
 #### `matrix`
 
@@ -211,19 +266,18 @@ Cozy, autumn inspired syntax highlighting.
 <script src="…/HTMLCodeElement.<theme>.matrix.js">
 ```
 
-All green, Matrix (1999) inspired syntax highlighting.
-
-| | |
-| - | - |
-| <a href="#syntax-highlighting"><img src="./readme/light.default.matrix.png" width="385"></a> | <a href="#syntax-highlighting"><img src="./readme/dark.default.matrix.png" width="385"></a> |
-
----
+<div>
+  <a href="#themes"><img src="./readme/light.matrix.png" width="400"></a>
+  &emsp;
+  <a href="#themes"><img src="./readme/dark.matrix.png" width="400"></a>
+  <br><br>
+</div>
 
 ---
 
 ### Config API
 
-The `HTMLSourceCodeElement` provides reasonable defaults for abstract visual or behavioural aspects. For instance, the tab width is two spaces by default. However, such aspects can be manipulated in a fashion similar to defining global attributes.
+The `HTMLSourceCodeElement` provides reasonable commons for abstract visual or behavioural aspects. For instance, the tab width is two spaces by common. However, such aspects can be manipulated in a fashion similar to defining global attributes.
 
 ``` ts
 HTMLSourceCodeElement
@@ -254,6 +308,7 @@ HTMLSourceCodeElement
 HTMLCodeElement.on("copy", (dom: {
   host: HTMLSourceCodeElement;
   edit: HTMLDivElement;
+  display: HTMLCodeElement;
   table: HTMLTableElement;
   copy: HTMLButtonElement;
 }) => void)

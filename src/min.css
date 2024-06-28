@@ -24,7 +24,15 @@
     color: var(--color-fg);
     font-family: monospace;
     font-size: 1em;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+:host([scroll]) {
+    overflow-x: scroll;
+}
+:host([scroll]) *[mirror] {
+    white-space: nowrap;
 }
 
 *::selection {
@@ -36,9 +44,6 @@
 *[mirror] {
     white-space: pre-wrap;
 }
-:host([scroll]) *[mirror] {
-    white-space: nowrap;
-}
 
 ::slotted {
     display: none !important;
@@ -48,7 +53,7 @@ pre {
     margin: 0;
 }
 
-div[edit] {
+.edit {
     font-family: monospace;
     position: absolute;
     box-sizing: border-box;
@@ -64,22 +69,23 @@ div[edit] {
     outline: none;
 }
 
-.wrapper {
+.display {
     user-select: none;
     pointer-events: none;
+    width: 100%;
 }
-.wrapper table {
+.display table {
     border-collapse: collapse;
     border-spacing: 0;
     width: 100%;
 }
-.wrapper td {
+.display td {
     line-height: calc(1em + var(--line-spacing));
 }
-.wrapper tr:first-of-type td {
+.display tr:first-of-type td {
     padding-top: calc(0.5 * var(--line-spacing));
 }
-.wrapper tr:last-of-type td {
+.display tr:last-of-type td {
     padding-bottom: calc(0.5 * var(--line-spacing));
 }
 
@@ -87,7 +93,7 @@ div[edit] {
     vertical-align: top;
     flex-shrink: 0;
     padding: 0 var(--line-spacing);
-    width: min-content;
+    width: 0;
     user-select: none;
     pointer-events: none;
     color: var(--color-fg--line-number);
@@ -102,17 +108,19 @@ div[edit] {
 
 .copy {
     cursor: pointer;
-    position: absolute;
     display: none;
+    position: absolute;
     padding: calc(0.75 * var(--line-spacing)) var(--line-spacing);
     top: 0;
     right: 0;
+    height: fit-content;
     background-color: inherit;
     color: inherit;
     font-size: 0.875em;
     border: none;
     outline: none;
+    text-align: right;
 }
 :host([copy]) .copy {
-    display: block;
+    display: flex;
 }

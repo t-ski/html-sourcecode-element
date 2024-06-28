@@ -1,0 +1,48 @@
+:host {
+    --line-spacing: 0.9em;
+    
+    --color-bg: #FDFDFD;
+    --color-bg--selection: var(--color-accent);
+    --color-fg: #4A4A4A;
+    --color-fg--selection: var(--color-bg);
+    --color-fg--line-number: #AEAEAE;
+    
+    --color-border: #EAEAEA;
+    --color-accent: #B682F5;
+}
+@media (prefers-color-scheme: dark) {
+    :host {
+        --color-bg: #242424;
+        --color-fg: #FAFAFA;
+        --color-fg--line-number: #666666;
+        
+        --color-border: #3A3A3A;
+        --color-accent: #D1ACFF;
+    }
+}
+
+:host {
+    --border: 1px solid var(--color-border);
+
+    border: var(--border);
+}
+
+.line-number {
+    border-right: var(--border);
+}
+.copy {
+    background: var(--color-bg);
+    text-transform: uppercase;
+    color: var(--color-fg--line-number);
+    font-size: 0.85rem;
+    border: var(--border);
+    outline: none;
+    transform: translateX(1px) translateY(-1px);
+    filter: opacity(0.0);
+}
+:host(:hover) .copy {
+    filter: opacity(1.0);
+}
+.copy.active {
+    filter: opacity(1.0);
+}
