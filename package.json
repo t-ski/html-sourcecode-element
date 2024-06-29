@@ -1,6 +1,6 @@
 {
   "name": "@t-ski/html-sourcecode-element",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "description": "Rich HTML code element with a native API.",
   "main": "./api.mjs",
   "types": "./types.d.ts",
