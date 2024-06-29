@@ -1,0 +1,1 @@
+export default function(theme?: string, syntax?: string);

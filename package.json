@@ -1,26 +1,32 @@
 {
-  "name": "html-code-element",
+  "name": "@t-ski/html-sourcecode-element",
   "version": "0.9.0",
   "description": "Rich HTML code element with a native API.",
-  "main": "./api.js",
+  "main": "./api.mjs",
+  "types": "./types.d.ts",
   "files": [
-    "./_config.json",
     "./dist/",
     "./api.js"
   ],
   "scripts": {
-    "build": "rm -rf ./dist/ && node ./build.js",
-    "build:watch": "node ./build.js --watch",
+    "build": "rm -rf ./dist/ && node ./scripts/build.js",
+    "build:watch": "node ./scripts/build.js --watch",
     "examples": "open ./examples/examples.html",
-    "test": "npm run build && npm run examples"
+    "test": "npm run build && npm run examples",
+    "release": "npm run build && node ./scripts/release.js",
+    "release:minor": "npm run release -- --minor",
+    "release:patch": "npm run release -- --patch"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/t-ski/html-code-element.git"
+    "url": "git+https://github.com/t-ski/html-sourcecode-element.git"
   },
   "author": "Thassilo Martin Schiepanski",
   "bugs": {
-    "url": "https://github.com/t-ski/html-code-element/issues"
+    "url": "https://github.com/t-ski/html-sourcecode-element/issues"
   },
-  "homepage": "https://github.com/t-ski/html-code-element#readme"
+  "homepage": "https://github.com/t-ski/html-sourcecode-element#readme",
+  "devDependencies": {
+    "uglify-js": "^3.18.0"
+  }
 }

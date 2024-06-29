@@ -3,10 +3,12 @@
  */
 
 (_ => {    
-    const _config = require("../_config.json");
+    const _config = require("_config.json");
     const template = require("template.html");
     const minCss = require("min.css");
-    
+
+    let copyTimeout;
+
     class HTMLSourceCodeElement extends HTMLElement {
         static #config = {
             tabSize: _config.defaultTabSize
@@ -17,12 +19,13 @@
         
         static #eventHandlers = {
             copy: (dom) => {
-                const fallbackText = dom.copy.textContent;
-                dom.copy.style.pointerEvents = "none";
+                clearTimeout(copyTimeout);
+
                 dom.copy.classList.add("active");
+                const fallbackText = dom.copy.textContent;
                 dom.copy.textContent = "Copied";
-                setTimeout(() => {
-                    dom.copy.style.pointerEvents = "auto";
+
+                copyTimeout = setTimeout(() => {
                     dom.copy.classList.remove("active");
                     dom.copy.textContent = fallbackText;
                 }, 1000);
@@ -337,7 +340,8 @@
         }
     }
     
-    window.customElements.define(_config.tagName, HTMLSourceCodeElement);
-
-    window[_config.className] = HTMLSourceCodeElement;
+    _config.tagNames
+    .forEach((tagName) => window.customElements.define(tagName, HTMLSourceCodeElement));
+    
+    window.HTMLSourceCodeElement = HTMLSourceCodeElement;
 })();

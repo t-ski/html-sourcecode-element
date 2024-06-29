@@ -23,7 +23,6 @@
     background-color: var(--color-bg);
     color: var(--color-fg);
     font-family: monospace;
-    font-size: 1em;
     overflow-x: hidden;
     overflow-y: scroll;
 }

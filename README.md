@@ -2,53 +2,53 @@
 
 Rich HTML code element with a native API.
 
-<a href="#integration"><img src="./readme/hero.gif" width="550"></a>
+<a href="#integration"><img src="./readme/hero.gif" width="500"></a>
 
-[1. Integration](#integration)  
-[2. Attributes](#attributes)  
+[1. Integration](#%EF%B8%8F-integration)  
+[2. Attributes](#%EF%B8%8F-attributes)  
 &emsp; [2.1 `copy`](#copy)  
 &emsp; [2.2 `edit`](#edit)  
 &emsp; [2.3 `type`](#type)  
 &emsp; [2.4 `language`](#language)  
 &emsp; [2.5 `scroll`](#scroll)  
-[3. Themes](#themes)  
+[3. Themes](#%EF%B8%8F-themes)  
 &emsp; [3.1 `min`](#min)  
 &emsp; [3.2 `common`](#common)  
 &emsp; [3.3 `outline`](#outline)  
-[4. Highlighting](#highlighting)  
+[4. Syntax Highlighting](#-syntax-highlighting)  
 &emsp; [4.1 `glitch`](#glitch)  
 &emsp; [4.2 `matrix`](#matrix)  
 
-## Integration
+## ⬇️ Integration
 
-#### From CDN
+#### via CDN
 
-`recommended`
+<sup>`recommended`</sup>
 
 ``` html
-<script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.<theme>[.<highlighting>].js"></script>
+<script src="unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLCodeElement.<theme>[.<highlighting>].js"></script>
 ```
 
-`<theme>` is a placeholder for an element theme identifier ([browse Themes](#themes)).  
-`<highlighting>` specifies an optional syntax highlighting scheme ([browse Highlighting](#highlighting)).
+- `<theme>` is a placeholder for an element theme identifier ([browse Themes](#themes)).
+- `<highlighting>` specifies an optional syntax highlighting scheme ([browse Highlighting](#highlighting)).
 
-> `<script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.common.glitch.js"></script>``
-
-#### From NPM
+#### via NPM
 
 ``` console
-npm i @t-ski/html-code-element
+npm i @t-ski/html-sourcecode-element
 ```
 
 ``` ts
-load(theme: string = "min", highlighting?: string);
+default function(theme: string = "min", highlighting?: string);
 ```
 
 ``` js
-import { load } from "@t-ski/html-code-element";
+import HTMLSourceCodeElement from "@t-ski/html-sourcecode-element";
 
-load("common", "glitch");
+HTMLSourceCodeElement("common", "glitch");
 ```
+
+> ⚠️ Integration via NPM serves ECMAScript module type bundlers.
 
 #### Usage
 
@@ -58,13 +58,12 @@ load("common", "glitch");
 </source-code>`
 ```
 
-> ℹ️ Anything slotted within the `<source-code>` is detected as code contents. HTML code snippets particularly do not have to be escaped.
+> ℹ️ Anything slotted within the `<source-code>` is interpreted as code contents. HTML code does in particular not have to be escaped – except for script tags.
 
-## Attributes
+## ☑️ Attributes
 
 #### `copy`
 
-<sub>`singleton`</sub>
 ``` html
 <source-code copy>
 ```
@@ -73,7 +72,6 @@ Make element copyable by hover activated button.
 
 #### `edit`
 
-<sub>`singleton`</sub>
 ``` html
 <source-code edit>
 ```
@@ -82,7 +80,6 @@ Make element editable like a script editor.
 
 #### `scroll`
 
-<sub>`singleton`</sub>
 ``` html
 <source-code type>
 ```
@@ -91,7 +88,6 @@ Make element scrollable at horizontal overflow, instead of wrap.
 
 #### `type`
 
-<sub>`singleton`</sub>
 ``` html
 <source-code type>
 ```
@@ -118,7 +114,7 @@ Specify maximum amount of lines after which to enable vertical scroll.
 
 ---
 
-### Attributes API
+### 💻 Attributes API
 
 The DOM class `HTMLSourceCodeElement` is associated with the `<source-code>` tag. The DOM class provides a static configuration function to override certain attributes globally.
 
@@ -137,7 +133,7 @@ HTMLSourceCodeElement
 
 > ℹ️ A global configuration does not invert, but override individual attributes.
 
-## Themes
+## 🖼️ Themes
 
 #### `min`
 
@@ -197,7 +193,7 @@ Minimal editor theme.
 
 ---
 
-### Theme API
+### 💻 Theme API
 
 Using the `addStylesheet()` method, custom styles can be injected into the `<source-code>` shadow DOM. The method exists both statically on `HTMLSourceCodeElement`, as well as on each individual instance. The method must be passed a URL to a stylesheet. Alternatively, an existing `<link>` or `<style>` element can be reused through a reference.
 
@@ -229,19 +225,21 @@ In a stylesheet, the `:host` selector refers to the encompassing `<source-code>`
 <button type="button" class="copy">Copy</span>
 ```
 
-## Highlighting
+## 🎨 Syntax Highlighting
 
 Syntax highlighting is an optional addition to the basic API. In fact, it requires [highlight.js](https://highlightjs.org/) to work:
 
 ``` html
 <head>
-  <script src="https://unpkg.com/@highlightjs/cdn-assets/highlight.min.js"></script>
-  <script src="unpkg.com/@t-ski/html-code-element/dist/HTMLCodeElement.common.glitch.js"></script>
+  <script src="https://unpkg.com/@highlightjs/cdn-assets/highlight.min.js"></script> <!-- dependency -->
+  <script src="unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLCodeElement.common.glitch.js"></script>
   <script>
-    HTMLCodeElement.on("highlight", (code, language) => {
-      return ´language
-            ? hljs.highlight(code, { language }).value
-            : hljs.highlightAuto(code).value);
+    document.addEventListener("DOMContentLoaded", () => {
+      HTMLCodeElement.on("highlight", (code, language) => {
+        return language
+             ? hljs.highlight(code, { language }).value
+             : hljs.highlightAuto(code).value);
+      });
     });
   </script>
 </head>
@@ -275,7 +273,7 @@ Syntax highlighting is an optional addition to the basic API. In fact, it requir
 
 ---
 
-### Config API
+### 💻 Config API
 
 The `HTMLSourceCodeElement` provides reasonable commons for abstract visual or behavioural aspects. For instance, the tab width is two spaces by common. However, such aspects can be manipulated in a fashion similar to defining global attributes.
 
@@ -293,7 +291,7 @@ HTMLSourceCodeElement
 
 > ℹ️ A global configuration does not invert, but override individual attributes.
 
-### Events API
+### 💻 Events API
 
 The `HTMLSourceCodeElement` DOM class provides a static API to handle events in a custom fashion.
 

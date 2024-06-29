@@ -3,7 +3,7 @@
 
     --color-bg--start: #F2F2F2E8;
     --color-bg--end: #FBFBFBD8;
-    --color-bg--translucent: #FBFBFB68;
+    --color-bg--translucent: #F2F2F298;
     --color-bg--selection: var(--color-accent);
     --color-fg: #3C3C3C;
     --color-fg--selection: var(--color-bg);
@@ -15,7 +15,7 @@
     :host {
         --color-bg--start: #222222E8;
         --color-bg--end: #3B3B3BD8;
-        --color-bg--translucent: #3B3B3B68;
+        --color-bg--translucent: #22222298;
         --color-fg: #FAFAFA;
         --color-fg--line-number: #8A8A8ADA;
         
@@ -52,13 +52,14 @@
 
 .copy {
     background: var(--color-bg--translucent);
-    margin: 0.5em;
-    padding: 0.25em 0.5em;
+    margin: 0.35em;
+    padding: 0.25em 0.6em;
     text-transform: uppercase;
     border: none;
     border-radius: var(--border-radius);
     outline: none;
     transition: filter 200ms;
+    backdrop-filter: blur(1.5px);
     filter: opacity(0.0);
 }
 :host(:hover) .copy {

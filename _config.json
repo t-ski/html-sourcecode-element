@@ -1,6 +1,0 @@
-{
-    "className": "HTMLSourceCodeElement",
-    "defaultTabSize": 2,
-    "onTypeMinLines": 5,
-    "tagName": "source-code"
-}

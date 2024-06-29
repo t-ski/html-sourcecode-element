@@ -22,7 +22,7 @@
 }
 
 
-.hljs-keyword, .hljs-section {
+.hljs-keyword, .hljs-attr, .hljs-attribute, .hljs-section {
     color: var(--code-keyword);
 }
 
@@ -30,7 +30,7 @@
     color: var(--code-type);
 }
 
-.hljs-title, .hljs-name, .hljs-attr, .hljs-attribute  {
+.hljs-title  {
     color: var(--code-title);
 }
 
@@ -38,7 +38,7 @@
     color: var(--code-variable);
 }
 
-.hljs-literal, .hljs-number, .hljs-bullet {
+.hljs-literal, .hljs-number, .hljs-name, .hljs-bullet {
     color: var(--code-literal);
 }
 .hljs-string, .hljs-emphasis, .hljs-strong {
