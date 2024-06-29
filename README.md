@@ -26,7 +26,7 @@ Rich HTML code element with a native API.
 <sup>`recommended`</sup>
 
 ``` html
-<script src="unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLCodeElement.<theme>[.<highlighting>].js"></script>
+<script src="unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLSourceCodeElement.<theme>[.<highlighting>].js"></script>
 ```
 
 - `<theme>` is a placeholder for an element theme identifier ([browse Themes](#themes)).
@@ -138,7 +138,7 @@ HTMLSourceCodeElement
 #### `min`
 
 ``` html
-<script src="…/HTMLCodeElement.min[.<syntax>].js">
+<script src="…/HTMLSourceCodeElement.min[.<syntax>].js">
 ```
 
 Minimal editor theme.
@@ -153,7 +153,7 @@ Minimal editor theme.
 #### `common`
 
 ``` html
-<script src="…/HTMLCodeElement.common[.<syntax>].js">
+<script src="…/HTMLSourceCodeElement.common[.<syntax>].js">
 ```
 
 <div>
@@ -166,7 +166,7 @@ Minimal editor theme.
 #### `outline`
 
 ``` html
-<script src="…/HTMLCodeElement.outline[.<syntax>].js">
+<script src="…/HTMLSourceCodeElement.outline[.<syntax>].js">
 ```
 
 <div>
@@ -179,7 +179,7 @@ Minimal editor theme.
 #### `opaque`
 
 ``` html
-<script src="…/HTMLCodeElement.opaque[.<syntax>].js">
+<script src="…/HTMLSourceCodeElement.opaque[.<syntax>].js">
 ```
 
 <div>
@@ -232,10 +232,10 @@ Syntax highlighting is an optional addition to the basic API. In fact, it requir
 ``` html
 <head>
   <script src="https://unpkg.com/@highlightjs/cdn-assets/highlight.min.js"></script> <!-- dependency -->
-  <script src="unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLCodeElement.common.glitch.js"></script>
+  <script src="unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLSourceCodeElement.common.glitch.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      HTMLCodeElement.on("highlight", (code, language) => {
+      HTMLSourceCodeElement.on("highlight", (code, language) => {
         return language
              ? hljs.highlight(code, { language }).value
              : hljs.highlightAuto(code).value);
@@ -248,7 +248,7 @@ Syntax highlighting is an optional addition to the basic API. In fact, it requir
 #### `glitch`
 
 ``` html
-<script src="…/HTMLCodeElement.<theme>.glitch.js">
+<script src="…/HTMLSourceCodeElement.<theme>.glitch.js">
 ```
 
 <div>
@@ -261,7 +261,7 @@ Syntax highlighting is an optional addition to the basic API. In fact, it requir
 #### `matrix`
 
 ``` html
-<script src="…/HTMLCodeElement.<theme>.matrix.js">
+<script src="…/HTMLSourceCodeElement.<theme>.matrix.js">
 ```
 
 <div>
@@ -303,10 +303,10 @@ HTMLSourceCodeElement
 #### on `copy`
 
 ``` ts
-HTMLCodeElement.on("copy", (dom: {
+HTMLSourceCodeElement.on("copy", (dom: {
   host: HTMLSourceCodeElement;
   edit: HTMLDivElement;
-  display: HTMLCodeElement;
+  display: HTMLSourceCodeElement;
   table: HTMLTableElement;
   copy: HTMLButtonElement;
 }) => void)
@@ -317,7 +317,7 @@ Callback fires whenever code is copied. The callback is passed the respective el
 #### on `highlight`
 
 ``` ts
-HTMLCodeElement.on("highlight", cb: (code: string, language?: string) => string)
+HTMLSourceCodeElement.on("highlight", cb: (code: string, language?: string) => string)
 ```
 
 Callback fires whenever code is rendered. The callback is passed the respective raw code to highlight. If the respective element has an assigned `language` attribute that value is also passed.

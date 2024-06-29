@@ -4,10 +4,6 @@
   "description": "Rich HTML code element with a native API.",
   "main": "./api.mjs",
   "types": "./types.d.ts",
-  "files": [
-    "./dist/",
-    "./api.js"
-  ],
   "scripts": {
     "build": "rm -rf ./dist/ && node ./scripts/build.js",
     "build:watch": "node ./scripts/build.js --watch",
