@@ -33,8 +33,8 @@ Rich HTML code element with a native API.
 <script src="https://unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLSourceCodeElement.<theme>[.<highlighting>].js"></script>
 ```
 
-- `<theme>` is a placeholder for an element theme identifier ([browse Themes](#themes)).
-- `<highlighting>` specifies an optional syntax highlighting scheme ([browse Highlighting](#highlighting)).
+- `<theme>` is a placeholder for an element theme identifier ([browse Themes](#%EF%B8%8F-themes)).
+- `<highlighting>` specifies an optional syntax highlighting scheme ([browse Highlighting](#-syntax-highlighting)).
 
 #### via NPM
 
