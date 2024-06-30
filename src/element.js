@@ -1,5 +1,6 @@
 "use strict";
 
+
 /*
  * (c) Thassilo Martin Schiepanski
  */
@@ -17,6 +18,7 @@
         };
         static #globalAttrs = {};
         static #stylesheets = [];
+        static #colorScheme = "auto";
         static #instances = [];
         
         static #eventHandlers = {
@@ -86,6 +88,27 @@
             .forEach((instance) => instance.addStylesheet(stylesheet));
         }
         
+        static setColorScheme(scheme = "auto") {
+            HTMLSourceCodeElement.#instances
+            .forEach((instance) => {
+                instance.classList.remove(HTMLSourceCodeElement.#colorScheme);
+            });
+            switch(scheme) {
+                case "light":
+                case "dark":
+                    HTMLSourceCodeElement.#instances
+                    .forEach((instance) => {
+                        instance.classList.add(scheme);
+                    });
+                    break;
+                case "auto":
+                    break;
+                default:
+                    return;
+            }
+            HTMLSourceCodeElement.#colorScheme = scheme;
+        }
+        
         #shadowRoot;
         #dom = {};
         #styleRecovery = {};
@@ -107,6 +130,36 @@
             };
             addStyle(minCss);
             addStyle(`@STYLE@`);
+
+            this.#dom.edit = this.#shadowRoot.querySelector(".edit");
+            this.#dom.display = this.#shadowRoot.querySelector(".display");
+            this.#dom.table = this.#dom.display.querySelector(".display table");
+            this.#dom.copy = this.#shadowRoot.querySelector(".copy");
+
+            const maxHeight = Math.max(0, parseInt(this.#readAttribute("maxheight") ?? -1));
+            maxHeight && (this.style.maxHeight
+                = `calc(${maxHeight - 0.25} * (1rem + var(--line-spacing))`);
+
+            this.#dom.edit.addEventListener("input", () => {
+                const code = HTMLSourceCodeElement.#decodeEntities(
+                    this.#dom.edit.innerHTML
+                    .replace(/< *div *>/gi, "")
+                    .replace(/(< *br *\/? *>)?< *\/div *>/gi, "<br>")
+                    .replace(/< *br *\/? *>/gi, "\n")
+                    .replace(/\n$/, "")
+                );
+                
+                this.render(code);
+
+                this.#dispatchEvent("input", code);
+            });
+            this.#dom.edit.addEventListener("keydown", (e) => {
+                if(e.keyCode !== 9) return;
+                e.preventDefault();
+                document.execCommand("insertText", false, " ".repeat(HTMLSourceCodeElement.#config.tabSize));
+            });
+            
+            this.#dom.copy.addEventListener("click", () => this.#copy());
 
             HTMLSourceCodeElement.#instances.push(this);
 
@@ -139,39 +192,12 @@
                     HTMLSourceCodeElement.#decodeEntities(tabbedLines),
                     this.#readAttribute("type") ? 0 : Infinity
                 );
-
+                
                 this.#recoverStyle("visibility");
             });
-            
-            this.#dom.edit = this.#shadowRoot.querySelector(".edit");
-            this.#dom.display = this.#shadowRoot.querySelector(".display");
-            this.#dom.table = this.#dom.display.querySelector(".display table");
-            this.#dom.copy = this.#shadowRoot.querySelector(".copy");
 
-            const maxHeight = Math.max(0, parseInt(this.#readAttribute("maxheight") ?? -1));
-            maxHeight && (this.style.maxHeight
-                = `calc(${maxHeight - 0.25} * (1rem + var(--line-spacing))`);
-
-            this.#dom.edit.addEventListener("input", () => {
-                const code = HTMLSourceCodeElement.#decodeEntities(
-                    this.#dom.edit.innerHTML
-                    .replace(/< *div *>/gi, "")
-                    .replace(/(< *br *\/? *>)?< *\/div *>/gi, "<br>")
-                    .replace(/< *br *\/? *>/gi, "\n")
-                    .replace(/\n$/, "")
-                );
-                
-                this.render(code);
-
-                this.#dispatchEvent("input", code);
-            });
-            this.#dom.edit.addEventListener("keydown", (e) => {
-                if(e.keyCode !== 9) return;
-                e.preventDefault();
-                document.execCommand("insertText", false, " ".repeat(HTMLSourceCodeElement.#config.tabSize));
-            });
-            
-            this.#dom.copy.addEventListener("click", () => this.#copy());
+            (HTMLSourceCodeElement.#colorScheme !== "auto")
+            this.classList.add(HTMLSourceCodeElement.#colorScheme);
         }
 
         #readAttribute(name) {
@@ -343,7 +369,13 @@
     }
     
     _config.tagNames
-    .forEach((tagName) => window.customElements.define(tagName, HTMLSourceCodeElement));
-    
+    .forEach((tagName) => {
+        [ "complete", "loaded", "interactive" ].includes(document.readyState)
+        && window.customElements.define(tagName, HTMLSourceCodeElement);
+        document.addEventListener("DOMContentLoaded", () => {
+            window.customElements.define(tagName, HTMLSourceCodeElement);
+        });
+    });
+
     window.HTMLSourceCodeElement = HTMLSourceCodeElement;
 })();

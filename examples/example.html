@@ -2,6 +2,8 @@
 <html>
     <head>
         <script src="https://unpkg.com/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
+        <!-- <script src="../dist/HTMLSourceCodeElement.common.glitch.js"></script> -->
+        <!-- <script src="https://unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLSourceCodeElement.common.glitch.js"></script> -->
         <style>
             body > * { font-family: sans-serif; margin: 1.5rem; max-width: 550px; }
             body.dark { background-color: #202020; color: white; }
@@ -82,6 +84,9 @@
                     tabSize: 4
                 });
             }, 2000);
+
+            setTimeout(() => HTMLSourceCodeElement.setColorScheme(hasChance() ? "light" : "dark"), 1000);
+            setTimeout(() => HTMLSourceCodeElement.setColorScheme("auto"), 7000);
         </script>
     </head>
     <body>
@@ -101,12 +106,12 @@
             const message = "Hello world"; // Greet everyone
         </source-code>
 
-        <source-code scroll edit style="max-width: 400px;">
+        <source-code scroll edit style="max-width: 400px;" class="dark">
             const message = "Hello world"; // Greet everyone
             true && console.log(message);
         </source-code>
 
-        <source-code language="c" maxheight="3">
+        <source-code language="c" maxheight="3" class="light">
             int main() {
                 for(int i = 0 ; i < 10; hi++) {
                     printf("Index = %d", i);

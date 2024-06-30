@@ -193,8 +193,6 @@ Minimal editor theme.
   <br><br>
 </div>
 
-> ℹ️ Themes adopt the colour scheme preferred by the user.
-
 ---
 
 ### 💻 Theme API
@@ -227,6 +225,14 @@ In a stylesheet, the `:host` selector refers to the encompassing `<source-code>`
   </table>
 </code>
 <button type="button" class="copy">Copy</span>
+```
+
+#### Color Scheme
+
+Themes adopt the colour scheme preferred by the user. Manually adjustable color schemes, however, can use the static `setColorScheme()` method. This way, a specific color scheme can be enforced globally.
+
+``` ts
+HTMLSourceCodeElement.setColorScheme("light" | "dark" | "auto");
 ```
 
 ## 🎨 Syntax Highlighting

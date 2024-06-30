@@ -7,25 +7,32 @@
     --color-bg--selection: var(--color-accent);
     --color-fg: #3C3C3C;
     --color-fg--selection: var(--color-bg);
-    --color-fg--line-number: #767676DA;
+    --color-fg--line-number: #575757DA;
 
     --color-accent: #00E0A1;
 }
 @media (prefers-color-scheme: dark) {
-    :host {
+    :host(:not(.light)) {
         --color-bg--start: #222222E8;
         --color-bg--end: #3B3B3BD8;
         --color-bg--translucent: #22222298;
         --color-fg: #FAFAFA;
-        --color-fg--line-number: #8A8A8ADA;
         
         --color-accent: #4BF2C3;
     }
 }
+:host(.dark) {
+    --color-bg--start: #222222E8;
+    --color-bg--end: #3B3B3BD8;
+    --color-bg--translucent: #22222298;
+    --color-fg: #FAFAFA;
+    
+    --color-accent: #4BF2C3;
+}
 
 :host {
     --border-radius: 0.5em;
-
+    
     border-radius: var(--border-radius);
     background: var(--color-bg--start);
     background: linear-gradient(45deg, var(--color-bg--start) 0%, var(--color-bg--end) 100%);

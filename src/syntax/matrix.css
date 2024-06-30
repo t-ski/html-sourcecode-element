@@ -2,7 +2,10 @@
     color: #009300;
 }
 @media (prefers-color-scheme: dark) {
-    .line-code {
+    :host(:not(.light)) .line-code {
         color: #00FF00;
     }
+}
+:host(.dark) {
+    color: #00FF00;
 }

@@ -11,7 +11,7 @@
     --color-accent: #B682F5;
 }
 @media (prefers-color-scheme: dark) {
-    :host {
+    :host(:not(.light)) {
         --color-bg: #242424;
         --color-fg: #FAFAFA;
         --color-fg--line-number: #777777;
@@ -19,6 +19,14 @@
         --color-border: #3A3A3A;
         --color-accent: #D1ACFF;
     }
+}
+:host(.dark) {
+    --color-bg: #242424;
+    --color-fg: #FAFAFA;
+    --color-fg--line-number: #777777;
+    
+    --color-border: #3A3A3A;
+    --color-accent: #D1ACFF;
 }
 
 :host {

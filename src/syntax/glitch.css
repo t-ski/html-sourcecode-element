@@ -11,7 +11,7 @@
     --code-regex: var(--code-string);
 }
 @media (prefers-color-scheme: dark) {
-    :host {
+    :host(:not(.light)) {
         --code-keyword: #EE81A6;
         --code-title: #49D4CB;
         --code-variable: #D5B2FA;
@@ -19,6 +19,14 @@
         --code-meta: #F9C8CC;
         --code-comment: #8D9595;
     }
+}
+:host(.dark) {
+    --code-keyword: #EE81A6;
+    --code-title: #49D4CB;
+    --code-variable: #D5B2FA;
+    --code-string: #69B5AD;
+    --code-meta: #F9C8CC;
+    --code-comment: #8D9595;
 }
 
 

@@ -5,13 +5,12 @@
   "main": "./api.mjs",
   "types": "./types.d.ts",
   "scripts": {
-    "build": "rm -rf ./dist/ && node ./scripts/build.js",
-    "build:watch": "node ./scripts/build.js --watch",
+    "build": "rm -rf ./dist/ && node ./build.js",
+    "build:watch": "node ./build.js --watch",
     "examples": "open ./examples/examples.html",
     "test": "npm run build && npm run examples",
-    "release": "npm run build && node ./scripts/release.js",
-    "release:minor": "npm run release -- --minor",
-    "release:patch": "npm run release -- --patch"
+    "release:minor": "npm run build && npx release --minor",
+    "release:patch": "npm run build && npx release --patch"
   },
   "repository": {
     "type": "git",
@@ -23,6 +22,7 @@
   },
   "homepage": "https://github.com/t-ski/html-sourcecode-element#readme",
   "devDependencies": {
+    "@t-ski/gh-npm-release": "github:t-ski/gh-npm-release",
     "uglify-js": "^3.18.0"
   },
   "license": "MIT"
