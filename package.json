@@ -24,5 +24,6 @@
   "homepage": "https://github.com/t-ski/html-sourcecode-element#readme",
   "devDependencies": {
     "uglify-js": "^3.18.0"
-  }
+  },
+  "license": "MIT"
 }

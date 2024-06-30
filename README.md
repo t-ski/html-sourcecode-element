@@ -1,5 +1,9 @@
 # HTMLSourceCodeElement
 
+![NPM Version](https://img.shields.io/npm/v/%40t-ski%2Fhtml-sourcecode-element?logo=npm)
+![GitHub License](https://img.shields.io/github/license/t-ski/html-sourcecode-element)
+![HTMLSourceCodeElement](https://img.shields.io/badge/HTMLElement-%3Csource%E2%80%93code%3E-orchid?logo=html)
+
 Rich HTML code element with a native API.
 
 <a href="#integration"><img src="./readme/hero.gif" width="500"></a>
@@ -26,7 +30,7 @@ Rich HTML code element with a native API.
 <sup>`recommended`</sup>
 
 ``` html
-<script src="unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLSourceCodeElement.<theme>[.<highlighting>].js"></script>
+<script src="https://unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLSourceCodeElement.<theme>[.<highlighting>].js"></script>
 ```
 
 - `<theme>` is a placeholder for an element theme identifier ([browse Themes](#themes)).

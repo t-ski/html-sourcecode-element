@@ -1,3 +1,5 @@
+"use strict";
+
 /*
  * (c) Thassilo Martin Schiepanski
  */
@@ -140,7 +142,7 @@
 
                 this.#recoverStyle("visibility");
             });
-
+            
             this.#dom.edit = this.#shadowRoot.querySelector(".edit");
             this.#dom.display = this.#shadowRoot.querySelector(".display");
             this.#dom.table = this.#dom.display.querySelector(".display table");

@@ -68,22 +68,24 @@ function scanThemes(dirname) {
 }
 
 function buildTheme(theme, syntax) {
+    const oneline = (code) => code.replace(/\n| {2,}/g, " ");
+
     const code = fs.readFileSync(path.join(PATH.src, "element.js")).toString()
     .replace(/require\((["'`])[^"'`]+\1\)/g, (match) => {
         const partialPath = path.join(PATH.src, match.slice(match.indexOf("(") + 2, -2).trim());
         const affix = ![ ".js", ".json" ].includes(path.extname(partialPath)) ? "`" : "";
         return [
             affix,
-            fs.readFileSync(partialPath).toString().replace(/\n| {2,}/g, " "),
+            oneline(fs.readFileSync(partialPath).toString()),
             affix
         ].join("");
     })
     .replace(
         /@STYLE@/,
-        [
+        oneline([
             theme ? fs.readFileSync(path.join(PATH.themes, `${theme}.css`)).toString() : "",
             syntax ? fs.readFileSync(path.join(PATH.syntax, `${syntax}.css`)).toString() : ""  // TODO: Auto integrate hljs?
-        ].join("\n")
+        ].join("\n"))
     );
     
     fs.writeFileSync(
