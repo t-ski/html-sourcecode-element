@@ -2,6 +2,9 @@
   "name": "@t-ski/html-sourcecode-element",
   "version": "1.1.0",
   "description": "Rich HTML code element with a native API.",
+  "keywords": [
+    "html", "code-element", "source-code", "editor"
+  ],
   "main": "./api.mjs",
   "types": "./types.d.ts",
   "scripts": {

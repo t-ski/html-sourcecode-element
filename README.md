@@ -1,8 +1,10 @@
 # HTMLSourceCodeElement
 
-![NPM Version](https://img.shields.io/npm/v/%40t-ski%2Fhtml-sourcecode-element?logo=npm)
-![GitHub License](https://img.shields.io/github/license/t-ski/html-sourcecode-element)
-![HTMLSourceCodeElement](https://img.shields.io/badge/HTMLElement-%3Csource%E2%80%93code%3E-orchid?logo=html)
+<a href="https://www.npmjs.com/package/@t-ski/html-sourcecode-element"><img src="https://img.shields.io/npm/v/%40t-ski%2Fhtml-sourcecode-element?logo=npm" alt="NPM"></a>
+&hairsp;
+<a href="https://github.com/t-ski/html-sourcecode-element/blob/master/LICENSE"><img src="https://img.shields.io/github/license/t-ski/html-sourcecode-element" alt="License"></a>
+&hairsp;
+<a href="https://gist.github.com/t-ski/13ffeede61ee5a9229cececf9f36c138"><img src="https://img.shields.io/badge/HTMLElement-%3Csource%E2%80%93code%3E-orchid?logo=html" alt="Example"></a>
 
 Rich HTML code element with a native API.
 
@@ -22,6 +24,7 @@ Rich HTML code element with a native API.
 [4. Syntax Highlighting](#-syntax-highlighting)  
 &emsp; [4.1 `glitch`](#glitch)  
 &emsp; [4.2 `matrix`](#matrix)  
+&emsp; [4.3 `reef`](#reef)  
 
 ## ⬇️ Integration
 
@@ -109,7 +112,7 @@ Specify language to help with highlighting (if necessary).
 #### `maxheight`
 
 ``` html
-<source-code maxheight="php">
+<source-code maxheight="5">
 ```
 
 Specify maximum amount of lines after which to enable vertical scroll.
@@ -135,7 +138,7 @@ HTMLSourceCodeElement
 });
 ```
 
-> ℹ️ A global configuration does not invert, but override individual attributes.
+> ℹ️ A global attributes configuration does not invert, but override individual attributes.
 
 ## 🖼️ Themes
 
@@ -242,7 +245,7 @@ Syntax highlighting is an optional addition to the basic API. In fact, it requir
 ``` html
 <head>
   <script src="https://unpkg.com/@highlightjs/cdn-assets/highlight.min.js"></script> <!-- dependency -->
-  <script src="unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLSourceCodeElement.common.glitch.js"></script>
+  <script src="https://unpkg.com/@t-ski/html-sourcecode-element/dist/HTMLSourceCodeElement.common.glitch.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       HTMLSourceCodeElement.on("highlight", (code, language) => {
@@ -265,7 +268,6 @@ Syntax highlighting is an optional addition to the basic API. In fact, it requir
   <a href="#themes"><img src="./readme/light.glitch.png" width="400"></a>
   &emsp;
   <a href="#themes"><img src="./readme/dark.glitch.png" width="400"></a>
-  <br><br>
 </div>
 
 #### `matrix`
@@ -278,7 +280,18 @@ Syntax highlighting is an optional addition to the basic API. In fact, it requir
   <a href="#themes"><img src="./readme/light.matrix.png" width="400"></a>
   &emsp;
   <a href="#themes"><img src="./readme/dark.matrix.png" width="400"></a>
-  <br><br>
+</div>
+
+#### `reef`
+
+``` html
+<script src="…/HTMLSourceCodeElement.<theme>.reef.js">
+```
+
+<div>
+  <a href="#themes"><img src="./readme/light.reef.png" width="400"></a>
+  &emsp;
+  <a href="#themes"><img src="./readme/dark.reef.png" width="400"></a>
 </div>
 
 ---
@@ -298,8 +311,6 @@ HTMLSourceCodeElement
   tabWidth: 4
 });
 ```
-
-> ℹ️ A global configuration does not invert, but override individual attributes.
 
 ### 💻 Events API
 
